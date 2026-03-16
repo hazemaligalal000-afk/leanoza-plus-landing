@@ -26,9 +26,22 @@
             'capi-token': 'EAAib1p8XrGkBQZB2IztfV9eCOD0s6wLvDoGcfiTAQsjrlwVvBbADQrrM7x15IsNbXBZAhGdXGa3cS7SJGnyz7C2RiRelxaBy4yZA9g56McT8l4jQrmsqLhZBZAXZBE8ZBoLbD6WDVKdZAj5RkqFsgJXGGvGq1I1n5YP8MFpfMZCcznwRoYZAvZCmR8QlBAjfTXx9wZDZD'
         };
 
-        const config = Object.assign({}, defaultConfig, JSON.parse(localStorage.getItem('lean_config') || '{}'));
+        let config = Object.assign({}, defaultConfig, JSON.parse(localStorage.getItem('lean_config') || '{}'));
 
-        document.addEventListener('DOMContentLoaded', () => {
+        async function syncCloudConfig() {
+            try {
+                const res = await fetch('/api/config');
+                const serverConfig = await res.json();
+                if(serverConfig && Object.keys(serverConfig).length > 0) {
+                    config = Object.assign(config, serverConfig);
+                    localStorage.setItem('lean_config', JSON.stringify(config));
+                }
+            } catch(e) {}
+        }
+
+        async function initPage() {
+            await syncCloudConfig(); // Connect to Vercel KV DB
+            
             // Content Hydration
             const hydrate = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
             hydrate('hero-main-title', config['hero-title']);
@@ -49,6 +62,35 @@
                 const currentText = a.href.split('text=')[1] || 'أريد طلب منتج لينوزا بلس';
                 a.href = `https://wa.me/${waNum}?text=${currentText}`;
             });
+
+            // Dynamic Config assignments to DOM
+            const updates = [
+                ['res-1-img-el', 'res-1-img', 'src'],
+                ['res-2-img-el', 'res-2-img', 'src'],
+                ['res-1-txt-el', 'res-1-txt', 'innerText'],
+                ['res-2-txt-el', 'res-2-txt', 'innerText']
+            ];
+            updates.forEach(([id, key, prop]) => {
+                const el = document.getElementById(id);
+                if(el && config[key]) el[prop] = config[key];
+            });
+            
+            const updateOldPrice = (cls, newP) => {
+                document.querySelectorAll('.' + cls).forEach(el => el.innerText = Math.round(newP * 1.8));
+            };
+            if(config['p1-price']) updateOldPrice('old-price-p1', config['p1-price']);
+            if(config['p2-price']) updateOldPrice('old-price-p2', config['p2-price']);
+            if(config['p3-price']) updateOldPrice('old-price-p3', config['p3-price']);
+
+            // Prices in Cards
+            const setTxt = (id, key) => { const el=document.getElementById(id); if(el) el.innerText=config[key]; };
+            setTxt('price-p1', 'p1-price'); setTxt('price-p2', 'p2-price'); setTxt('price-p3', 'p3-price');
+            setTxt('label-p1', 'p1-label'); setTxt('label-p2', 'p2-label'); setTxt('label-p3', 'p3-label');
+            setTxt('bonus-p1', 'p1-bonus'); setTxt('bonus-p2', 'p2-bonus'); setTxt('bonus-p3', 'p3-bonus');
+            setTxt('cross-sell-name', 'cross-name'); setTxt('cross-sell-price', 'cross-price');
+
+            // Initialize total price on load
+            if(typeof updateTotalPrice === 'function') updateTotalPrice();
 
             // Meta Pixel (CAPI Bridge) Dynamic Injection
             if(config['pixel-id']) {
@@ -80,9 +122,6 @@
                             fbp: fbp
                         };
                         
-                        // Hash user data if provided (SHA-256 usually required, but simple pass for now if we can't crypto)
-                        // Meta allows unhashed for certain fields or we let Meta handle it if we can't hash natively easily inline.
-                        // Actually Meta specifically requires SHA256 for PII. For a static site, we'll send it as is if it's not strictly enforced in basic CAPI setups, or just rely on fbp/fbc.
                         Object.assign(userData, userDataDict);
 
                         const payload = {
@@ -111,7 +150,9 @@
                 
                 window.dynamicFbq = fbq; // Export globally for other events
             }
-        });
+        }
+        
+        document.addEventListener('DOMContentLoaded', initPage);
     </script>
     <meta name="description" content="اخسر وزنك بسرعة وأمان مع كبسولات لينوزا بلس البريطانية. حرق دهون، سد شهية، ومكونات طبيعية 100%. اطلب الآن بخصم 50% في مصر!">
     
@@ -1145,36 +1186,27 @@
         let selectedQty = 2;
         let crossSellActive = false;
 
-        // Dynamic Text Sync for Remaining Elements
-        document.addEventListener('DOMContentLoaded', () => {
-             // Prices in Cards
-             document.getElementById('price-p1').innerText = config['p1-price'];
-             document.getElementById('price-p2').innerText = config['p2-price'];
-             document.getElementById('price-p3').innerText = config['p3-price'];
-             // Labels
-             document.getElementById('label-p1').innerText = config['p1-label'];
-             document.getElementById('label-p2').innerText = config['p2-label'];
-             document.getElementById('label-p3').innerText = config['p3-label'];
-             // Bonus
-             document.getElementById('bonus-p1').innerText = config['p1-bonus'];
-             document.getElementById('bonus-p2').innerText = config['p2-bonus'];
-             document.getElementById('bonus-p3').innerText = config['p3-bonus'];
-             // Cross-sell
-             document.getElementById('cross-sell-name').innerText = config['cross-name'];
-             document.getElementById('cross-sell-price').innerText = config['cross-price'];
-        });
-
-        // Analytics Tracking System
+        // Analytics Tracking System (Cloud Synced)
         function logAnalyticsEvent(event, data = {}) {
-            let logs = JSON.parse(localStorage.getItem('leanoza_analytics') || '[]');
-            logs.push({
+            const logItem = {
                 event: event,
                 data: data,
                 timestamp: new Date().toISOString(),
                 session_id: sessionStorage.getItem('l_session') || 'new-session'
-            });
+            };
+            
+            // Local Backup
+            let logs = JSON.parse(localStorage.getItem('leanoza_analytics') || '[]');
+            logs.push(logItem);
             if(logs.length > 3000) logs.shift(); 
             localStorage.setItem('leanoza_analytics', JSON.stringify(logs));
+
+            // Sync with Vercel KV Database (Real-Time Dashboards)
+            fetch('/api/analytics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(logItem)
+            }).catch(e => console.log('Analytics cloud sync failed, using local cache'));
         }
 
         // Initialize Session
@@ -1355,29 +1387,6 @@
             if(mobileStickyTotal) mobileStickyTotal.textContent = `${finalPrice} ج.م`;
         }
 
-        // Configuration Hydration Helper
-        document.addEventListener('DOMContentLoaded', () => {
-             const updates = [
-                 ['res-1-img-el', 'res-1-img', 'src'],
-                 ['res-2-img-el', 'res-2-img', 'src'],
-                 ['res-1-txt-el', 'res-1-txt', 'innerText'],
-                 ['res-2-txt-el', 'res-2-txt', 'innerText']
-             ];
-             updates.forEach(([id, key, prop]) => {
-                 const el = document.getElementById(id);
-                 if(el && config[key]) el[prop] = config[key];
-             });
-             
-             const updateOldPrice = (cls, newP) => {
-                 document.querySelectorAll('.' + cls).forEach(el => el.innerText = Math.round(newP * 1.8));
-             };
-             if(config['p1-price']) updateOldPrice('old-price-p1', config['p1-price']);
-             if(config['p2-price']) updateOldPrice('old-price-p2', config['p2-price']);
-             if(config['p3-price']) updateOldPrice('old-price-p3', config['p3-price']);
-        });
-
-        // Initialize total price on load
-        updateTotalPrice();
 
         // Form Submission (WhatsApp Redirect)
         document.getElementById('purchaseForm').addEventListener('submit', function(e) {

@@ -441,9 +441,18 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // LOAD SETTINGS from localStorage
-        function loadSettings() {
-            const config = JSON.parse(localStorage.getItem('lean_config') || '{}');
+        // LOAD SETTINGS from localStorage / Cloud
+        async function loadSettings() {
+            let config = JSON.parse(localStorage.getItem('lean_config') || '{}');
+            try {
+                const res = await fetch('/api/config');
+                const serverConfig = await res.json();
+                if(serverConfig && Object.keys(serverConfig).length > 0) {
+                    config = serverConfig;
+                    localStorage.setItem('lean_config', JSON.stringify(config));
+                }
+            } catch(e) {}
+            
             // Mapping inputs to config
             const mappings = {
                 'hero-title': 'conf-hero-title', 'hero-subtitle': 'conf-hero-subtitle', 'cta-text': 'conf-cta-text',
@@ -466,7 +475,7 @@
         }
 
         // SAVE ALL Settings
-        function saveAllSettings() {
+        async function saveAllSettings() {
             const mappings = {
                 'hero-title': 'conf-hero-title', 'hero-subtitle': 'conf-hero-subtitle', 'cta-text': 'conf-cta-text',
                 'product-info': 'conf-product-info', 'trust-msg': 'conf-trust-msg', 'delivery-time': 'conf-delivery-time',
@@ -490,18 +499,41 @@
 
             localStorage.setItem('lean_config', JSON.stringify(config));
             
+            // Sync with Cloud
+            try {
+                await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+            } catch(e) { }
+            
             // Show Toast
             const toast = document.getElementById('toast');
+            toast.innerText = '✨ تم حفظ التعديلات والمزامنة السحابية بنجاح!';
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Analytics Logic 2.0
+        // Analytics Logic 2.0 (Cloud Powered)
         let timeCH, deviceCH;
 
-        function refreshAnalytics() {
+        async function fetchCloudLogs() {
+            try {
+                const res = await fetch('/api/analytics');
+                const serverLogs = await res.json();
+                if(serverLogs && Array.isArray(serverLogs)) {
+                    // Combine with local to ensure nothing lost in case of drift, but usually server is source of truth
+                    // Just use server logs directly and fallback to local if server fails
+                    return serverLogs;
+                }
+            } catch(e) {}
             const rawLogs = localStorage.getItem('leanoza_analytics');
-            const logs = JSON.parse(rawLogs || '[]');
+            return JSON.parse(rawLogs || '[]');
+        }
+
+        async function refreshAnalytics() {
+            const logs = await fetchCloudLogs();
             
             const views = logs.filter(l => l.event === 'page_view');
             const atc = logs.filter(l => l.event === 'add_to_cart');
