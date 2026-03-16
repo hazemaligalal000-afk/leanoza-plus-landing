@@ -533,7 +533,11 @@
         }
 
         async function refreshAnalytics() {
-            const logs = await fetchCloudLogs();
+            let logs = await fetchCloudLogs();
+            
+            // Filter ALL logs to strictly the last hour (60 minutes)
+            const oneHourAgo = new Date(Date.now() - 60 * 60000).getTime();
+            logs = logs.filter(l => new Date(l.timestamp).getTime() >= oneHourAgo);
             
             const views = logs.filter(l => l.event === 'page_view');
             const atc = logs.filter(l => l.event === 'add_to_cart');
