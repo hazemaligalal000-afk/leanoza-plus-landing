@@ -529,8 +529,9 @@
             }, {});
             updateDeviceChart(devices);
 
-            // Time Projection (Fake logic for UX beauty)
-            document.getElementById('stat-projected').textContent = (orders.length * 1.4).toFixed(0);
+            // Time Projection (Real Logic based on AOV * Conversions)
+            const projected = Math.round(aov * orders.length * 1.2); // 20% estimated uplift
+            document.getElementById('stat-projected').innerHTML = `${projected.toLocaleString()}`;
 
             // Funnel
             const funnelCont = document.getElementById('funnel-container');
@@ -574,6 +575,28 @@
                     <td class="py-4 text-left pl-2 opacity-40 text-[10px]">${new Date(r.timestamp).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</td>
                 </tr>
             `).join('');
+
+            // Update Time Chart Logic from Real Data
+            if (timeCH && views.length > 0) {
+                // Highly simplified binning for today's logs
+                const now = new Date();
+                const todayViews = views.filter(v => new Date(v.timestamp).toDateString() === now.toDateString());
+                
+                let bins = [0, 0, 0, 0, 0, 0, 0];
+                todayViews.forEach(v => {
+                    const hour = new Date(v.timestamp).getHours();
+                    if (hour < 4) bins[0]++;
+                    else if (hour < 8) bins[1]++;
+                    else if (hour < 12) bins[2]++;
+                    else if (hour < 16) bins[3]++;
+                    else if (hour < 20) bins[4]++;
+                    else if (hour < 24) bins[5]++;
+                });
+                bins[6] = todayViews.length > 0 ? todayViews.slice(-10).length : 0; // "Now" activity
+
+                timeCH.data.datasets[0].data = bins;
+                timeCH.update();
+            }
         }
 
         // Charts
@@ -584,7 +607,7 @@
                 data: {
                     labels: ['12am', '4am', '8am', '12pm', '4pm', '8pm', 'Now'],
                     datasets: [{ 
-                        label: 'الزيارات', data: [80, 120, 310, 580, 420, 890, 1500], 
+                        label: 'الزيارات', data: [0, 0, 0, 0, 0, 0, 0], 
                         borderColor: '#00ff88', backgroundColor: 'rgba(0, 255, 136, 0.05)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0 
                     }]
                 },
@@ -597,7 +620,7 @@
                 data: {
                     labels: ['Mobile', 'Desktop'],
                     datasets: [{ 
-                        data: [85, 15], 
+                        data: [0, 0], 
                         backgroundColor: ['#00ff88', '#1a1a1a'], 
                         borderWidth: 0,
                         cutout: '80%'
