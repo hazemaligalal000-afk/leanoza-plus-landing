@@ -140,15 +140,15 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 text-center">
                 <div class="card p-4">
                     <p class="text-[9px] font-black text-gray-500 uppercase mb-1">الزوار الآن</p>
-                    <div class="text-xl font-black text-green-400 animate-pulse">24</div>
+                    <div id="stat-live-users" class="text-xl font-black text-green-400 animate-pulse">0</div>
                 </div>
                 <div class="card p-4">
                     <p class="text-[9px] font-black text-gray-500 uppercase mb-1">متوسط البقاء</p>
-                    <div id="stat-time" class="text-xl font-black text-white font-outfit">2:45m</div>
+                    <div id="stat-time" class="text-xl font-black text-white font-outfit">0:00m</div>
                 </div>
                 <div class="card p-4">
                     <p class="text-[9px] font-black text-gray-500 uppercase mb-1">نسبة التمرير</p>
-                    <div id="stat-scroll" class="text-xl font-black text-white font-outfit">72%</div>
+                    <div id="stat-scroll" class="text-xl font-black text-white font-outfit">0%</div>
                 </div>
                 <div class="card p-4 border-dashed border-white/10 bg-transparent">
                     <p class="text-[9px] font-black text-gray-500 uppercase mb-1">توقع الأرباح</p>
@@ -554,8 +554,20 @@
 
             // Advanced Stats
             const scrolls = logs.filter(l => l.event === 'scroll_depth').map(l => parseInt(l.data.depth) || 0);
-            const avgScroll = scrolls.length > 0 ? Math.round(scrolls.reduce((a,b)=>a+b, 0) / scrolls.length) : 70;
+            const avgScroll = scrolls.length > 0 ? Math.round(scrolls.reduce((a,b)=>a+b, 0) / scrolls.length) : 0;
             document.getElementById('stat-scroll').textContent = avgScroll + '%';
+
+            // Live Users (Last 5 minutes active)
+            const fiveMinsAgo = new Date(Date.now() - 5 * 60000).toISOString();
+            const liveUsers = views.filter(l => l.timestamp >= fiveMinsAgo).length;
+            document.getElementById('stat-live-users').textContent = liveUsers;
+
+            // Avg Time on Page
+            const times = logs.filter(l => l.event === 'time_on_page').map(l => parseInt(l.data.seconds) || 0);
+            const avgSeconds = times.length > 0 ? Math.round(times.reduce((a,b)=>a+b, 0) / times.length) : 0;
+            const mins = Math.floor(avgSeconds / 60);
+            const secs = avgSeconds % 60;
+            document.getElementById('stat-time').textContent = `${mins}:${secs.toString().padStart(2, '0')}m`;
 
             // Device Mix
             const devices = views.reduce((acc, v) => {
