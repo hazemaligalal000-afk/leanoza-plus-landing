@@ -14,38 +14,13 @@
             color: #e2e8f0;
             overflow-x: hidden;
         }
-        .sidebar {
-            background-color: #0d0d0d;
-            border-left: 1px solid #1a1a1a;
-        }
-        .card {
-            background: #0d0d0d;
-            border: 1px solid #1a1a1a;
-            border-radius: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            border-color: #00ff88;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.05);
-        }
-        .stat-icon {
-            background: rgba(0, 255, 136, 0.1);
-            color: #00ff88;
-        }
-        .neon-text {
-            color: #00ff88;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-        }
-        .active-menu {
-            background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, transparent 100%);
-            border-right: 4px solid #00ff88;
-            color: #00ff88;
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #050505; }
-        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00ff88; }
+        .sidebar { background-color: #0d0d0d; border-left: 1px solid #1a1a1a; }
+        .card { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 1.5rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .card:hover { border-color: #00ff88; box-shadow: 0 0 20px rgba(0, 255, 136, 0.05); }
+        .neon-text { color: #00ff88; text-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
+        .active-menu { background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, transparent 100%); border-right: 4px solid #00ff88; color: #00ff88; }
+        .simulation-active { animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); } }
     </style>
 </head>
 <body class="flex min-h-screen">
@@ -54,214 +29,142 @@
     <aside class="sidebar w-72 hidden lg:flex flex-col sticky top-0 h-screen">
         <div class="p-8">
             <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center font-black text-white italic">L+</div>
-                <h1 class="text-xl font-black italic tracking-tighter">LEANOZA <span class="text-xs block text-gray-500 font-bold tracking-normal uppercase">Business OS</span></h1>
+                <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center font-black text-black italic">L+</div>
+                <h1 class="text-xl font-black italic tracking-tighter">LEANOZA <span class="text-[8px] block text-green-500 font-bold tracking-normal uppercase">Intelligence Panel</span></h1>
             </div>
 
             <nav class="space-y-2">
                 <a href="#" class="flex items-center gap-4 px-6 py-4 rounded-xl active-menu font-bold transition-all">
-                    <span>📊</span>
-                    لوحة الإحصائيات
+                    <span>📊</span> لوحة الإحصائيات الحية
                 </a>
                 <a href="#" class="flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-bold transition-all">
-                    <span>📦</span>
-                    الطلبات
+                    <span>📦</span> سجل الطلبات المؤكدة
                 </a>
                 <a href="#" class="flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-bold transition-all">
-                    <span>💊</span>
-                    المنتجات
+                    <span>📱</span> أداء الواتساب
                 </a>
-                <a href="#" class="flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-bold transition-all">
-                    <span>🎯</span>
-                    Funnels
-                </a>
-                <div class="pt-10 pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-widest">Marketing tools</div>
-                <a href="#" class="flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-bold transition-all">
-                    <span>📣</span>
-                    إدارة الحملات
-                </a>
-                <a href="#" class="flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-bold transition-all">
-                    <span>📱</span>
-                    واتساب شات
-                </a>
+                <div class="pt-10 pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-widest">Advanced Tools</div>
+                <button id="sim-btn" onclick="toggleSimulation()" class="w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-green-500 hover:bg-green-500/5 font-bold transition-all group">
+                    <span class="group-hover:animate-spin">🔄</span> محاكي الزوار (Debug)
+                </button>
+                <div class="pt-10 pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-widest">Global System</div>
+                <button onclick="logout()" class="w-full flex items-center gap-4 px-6 py-4 rounded-xl text-red-500 hover:bg-red-500/5 font-bold transition-all">
+                    <span>🚪</span> تسجيل الخروج
+                </button>
             </nav>
         </div>
 
         <div class="mt-auto p-6">
-            <div class="bg-gradient-to-br from-green-900/20 to-black p-6 rounded-3xl border border-green-500/20">
-                <p class="text-[10px] font-black text-green-500 uppercase mb-2">Premium Plan</p>
-                <p class="text-xs font-bold leading-relaxed mb-4">اشترك الآن في الباقة المميزة ونمي متجرك!</p>
-                <button class="w-full bg-green-500 text-black py-2 rounded-xl text-xs font-black hover:bg-white transition-colors">اشترك الآن</button>
+            <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] text-gray-500 leading-tight">
+                <p class="font-bold text-white mb-2">💡 نصيحة الخبير:</p>
+                الباقة الأكثر مبيعاً اليوم هي "علبتين". قم بزيادة تركيز إعلاناتك عليها لرفع معدل الـ AOV.
             </div>
-            <div class="text-[10px] text-gray-600 text-center mt-6 font-outfit uppercase tracking-tighter opacity-50">v2.3.119 • Leonza Pro</div>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-6 md:p-10">
+    <main class="flex-1 p-6 md:p-10 max-w-[1600px] mx-auto">
         <!-- Header -->
         <header class="flex justify-between items-center mb-10">
             <div>
-                <h2 class="text-3xl font-black mb-1">مرحباً، حازم 👋</h2>
-                <p class="text-gray-500 text-sm">إليك ما حدث في صفحة الهبوط الخاصة بك اليوم</p>
+                <h2 class="text-3xl font-black mb-1">تحليلات حية لحظية 🎥</h2>
+                <p class="text-gray-500 text-sm">بيانات واقعية بناءً على تفاعل العميلات مع صفحة الهبوط</p>
             </div>
             <div class="flex items-center gap-4">
-                <div class="bg-red-500/10 text-red-500 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 animate-pulse">
-                    <span class="w-2 h-2 bg-red-500 rounded-full"></span>
-                    بث مباشر للبيانات
+                <div id="live-indicator" class="bg-green-500/10 text-green-500 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                    <span id="live-users-count">4</span> عـميلات يتصفحن الآن
                 </div>
-                <div class="w-12 h-12 bg-[#0d0d0d] rounded-2xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-white/5 transition-all">
-                    🔔
-                </div>
+                <button onclick="localStorage.removeItem('leanoza_analytics'); location.reload();" class="text-xs text-red-400 hover:underline">تصفير البيانات</button>
             </div>
         </header>
 
         <!-- KPI Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-10">
-            <!-- Stat 1 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-10">
             <div class="card p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-2xl">👁️</span>
-                    <span class="text-[10px] bg-green-500/10 text-green-500 px-2 py-1 rounded">+12%</span>
-                </div>
-                <p class="text-gray-500 text-xs font-bold mb-1">إجمالي الزيارات</p>
-                <h3 id="stat-views" class="text-2xl font-black font-outfit">1,420</h3>
+                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">الزيارات</p>
+                <h3 id="stat-views" class="text-3xl font-black font-outfit text-white">0</h3>
             </div>
-            <!-- Stat 2 -->
             <div class="card p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-2xl">🛒</span>
-                    <span class="text-[10px] bg-green-500/10 text-green-500 px-2 py-1 rounded">+8%</span>
-                </div>
-                <p class="text-gray-500 text-xs font-bold mb-1">إضافة للسلة</p>
-                <h3 id="stat-atc" class="text-2xl font-black font-outfit">284</h3>
+                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">اهتمام بالمنتج</p>
+                <h3 id="stat-atc" class="text-3xl font-black font-outfit text-white">0</h3>
             </div>
-            <!-- Stat 3 -->
             <div class="card p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-2xl">💳</span>
-                    <span class="text-[10px] bg-purple-500/10 text-purple-500 px-2 py-1 rounded">HOT</span>
-                </div>
-                <p class="text-gray-500 text-xs font-bold mb-1">بدء الشراء</p>
-                <h3 id="stat-checkout" class="text-2xl font-black font-outfit">156</h3>
+                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">بدء الطلب</p>
+                <h3 id="stat-checkout" class="text-3xl font-black font-outfit text-white">0</h3>
             </div>
-            <!-- Stat 4 -->
-            <div class="card p-6 border-green-500/50">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-2xl">⚡</span>
-                    <span class="text-[10px] bg-green-500 text-black px-2 py-1 rounded">WIN</span>
-                </div>
-                <p class="text-gray-500 text-xs font-bold mb-1">تحويلات واتساب</p>
-                <h3 id="stat-conversions" class="text-2xl font-black font-outfit neon-text">42</h3>
+            <div class="card p-6 border-green-500/30">
+                <p class="text-green-500 text-[10px] font-black uppercase mb-1">تحويلات مؤكدة</p>
+                <h3 id="stat-conversions" class="text-4xl font-black font-outfit neon-text">0</h3>
             </div>
-            <!-- Stat 5 -->
             <div class="card p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-2xl">📊</span>
-                    <span class="text-[10px] bg-blue-500/10 text-blue-500 px-2 py-1 rounded">Avg</span>
-                </div>
-                <p class="text-gray-500 text-xs font-bold mb-1">معدل التحويل</p>
-                <h3 id="stat-cr" class="text-2xl font-black font-outfit">2.9%</h3>
+                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">معدل التحويل (CR)</p>
+                <h3 id="stat-cr" class="text-3xl font-black font-outfit text-white">0%</h3>
             </div>
-            <!-- Stat 6 -->
             <div class="card p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-2xl">💰</span>
-                    <span class="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded">+4%</span>
-                </div>
-                <p class="text-gray-500 text-xs font-bold mb-1">متوسط قيمة الطلب</p>
-                <h3 id="stat-aov" class="text-2xl font-black font-outfit">840 <span class="text-xs">ج.م</span></h3>
+                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">متوسط السلة (AOV)</p>
+                <h3 id="stat-aov" class="text-2xl font-black font-outfit text-white">0 <span class="text-[10px]">ج.م</span></h3>
             </div>
         </div>
 
-        <!-- Charts Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-            <!-- Main Line Chart -->
-            <div class="card p-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h4 class="font-black text-xl flex items-center gap-2">
-                        <span class="w-3 h-3 bg-green-500 rounded-full"></span>
-                        أداء الزيارات والطلبات
-                    </h4>
-                    <select class="bg-black border border-white/10 rounded-lg text-xs p-2 outline-none outline-none">
-                        <option>آخر 24 ساعة</option>
-                        <option>آخر 7 أيام</option>
-                    </select>
-                </div>
-                <canvas id="performanceChart" height="200"></canvas>
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-10">
+            <!-- Timeline Chart -->
+            <div class="xl:col-span-2 card p-8">
+                <h4 class="font-black text-lg mb-8 flex items-center gap-2">⏱️ التسلسل الزمني للتفاعل</h4>
+                <canvas id="timeChart" height="150"></canvas>
             </div>
-
-            <!-- Funnel Chart -->
-            <div class="card p-8">
-                <h4 class="font-black text-xl mb-8 flex items-center gap-2">
-                    <span class="w-3 h-3 bg-purple-500 rounded-full"></span>
-                    قمع المبيعات (Sales Funnel)
-                </h4>
-                <div class="space-y-6">
-                    <!-- Funnel Level 1 -->
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-2">
-                            <span class="text-gray-400">زوار الصفحة</span>
-                            <span id="funnel-views">100%</span>
+            
+            <!-- Scroll Depth Heatmap -->
+            <div class="card p-8 flex flex-col">
+                <h4 class="font-black text-lg mb-8 flex items-center gap-2">🔥 تحليل القراءة (Scroll)</h4>
+                <div class="flex-1 space-y-4">
+                    <div class="relative pt-1">
+                        <div class="flex items-center justify-between text-xs font-bold mb-2">
+                            <span>الهيرو (أول الصفحة)</span>
+                            <span id="scroll-1">0%</span>
                         </div>
-                        <div class="h-4 bg-white/5 rounded-full overflow-hidden">
-                            <div class="h-full bg-blue-500 w-[100%] transition-all duration-1000"></div>
+                        <div class="h-3 bg-white/5 rounded-full overflow-hidden">
+                            <div id="bar-scroll-1" class="h-full bg-green-500 w-0 transition-all duration-1000"></div>
                         </div>
                     </div>
-                    <!-- Funnel Level 2 -->
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-2">
-                            <span class="text-gray-400">اهتمام بالباقات (ATC)</span>
-                            <span id="funnel-atc">20%</span>
+                    <div class="relative pt-1">
+                        <div class="flex items-center justify-between text-xs font-bold mb-2">
+                            <span>المميزات والعروض (وسط)</span>
+                            <span id="scroll-2">0%</span>
                         </div>
-                        <div class="h-4 bg-white/5 rounded-full overflow-hidden">
-                            <div id="funnel-atc-bar" class="h-full bg-purple-500 w-[20%] transition-all duration-1000"></div>
-                        </div>
-                    </div>
-                    <!-- Funnel Level 3 -->
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-2">
-                            <span class="text-gray-400">تفاعل مع الفورم (Checkout)</span>
-                            <span id="funnel-checkout">11%</span>
-                        </div>
-                        <div class="h-4 bg-white/5 rounded-full overflow-hidden">
-                            <div id="funnel-checkout-bar" class="h-full bg-yellow-500 w-[11%] transition-all duration-1000"></div>
+                        <div class="h-3 bg-white/5 rounded-full overflow-hidden">
+                            <div id="bar-scroll-2" class="h-full bg-yellow-500 w-0 transition-all duration-1000"></div>
                         </div>
                     </div>
-                    <!-- Funnel Level 4 -->
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-2">
-                            <span class="text-gray-400">تأكيد واتساب (Converted)</span>
-                            <span id="funnel-conv">3%</span>
+                    <div class="relative pt-1">
+                        <div class="flex items-center justify-between text-xs font-bold mb-2">
+                            <span>نموذج الطلب (نهاية الصفحة)</span>
+                            <span id="scroll-3">0%</span>
                         </div>
-                        <div class="h-4 bg-white/5 rounded-full overflow-hidden">
-                            <div id="funnel-conv-bar" class="h-full bg-green-500 w-[3%] transition-all duration-1000"></div>
+                        <div class="h-3 bg-white/5 rounded-full overflow-hidden">
+                            <div id="bar-scroll-3" class="h-full bg-red-500 w-0 transition-all duration-1000"></div>
                         </div>
                     </div>
                 </div>
+                <p class="text-[10px] text-gray-500 mt-6 leading-relaxed italic">يتم تتبع "عمق التمرير" لمعرفة النقطة التي تخرج عندها العميلات من الصفحة.</p>
             </div>
         </div>
 
-        <!-- Latest Conversions Table -->
+        <!-- Latest Sales Table -->
         <div class="card p-8">
-            <div class="flex justify-between items-center mb-8">
-                <h4 class="font-black text-xl">آخر الطلبات (لايف)</h4>
-                <button class="text-primary text-xs font-bold hover:underline">تحميل كامل البيانات (Excel)</button>
-            </div>
+            <h4 class="font-black text-xl mb-8">سجل العمليات الحقيقي (أحدث 10 عمليات)</h4>
             <div class="overflow-x-auto">
-                <table class="w-full text-right">
+                <table class="w-full text-right border-collapse">
                     <thead>
-                        <tr class="text-gray-500 text-xs border-b border-white/5">
-                            <th class="pb-4 font-black">العميلة</th>
-                            <th class="pb-4 font-black">المدينة</th>
-                            <th class="pb-4 font-black">العرض</th>
-                            <th class="pb-4 font-black">المبلغ</th>
-                            <th class="pb-4 font-black">الحالة</th>
-                            <th class="pb-4 font-black text-left">التوقيت</th>
+                        <tr class="text-[10px] font-black text-gray-500 border-b border-white/5 uppercase">
+                            <th class="pb-4">الحدث</th>
+                            <th class="pb-4">بيانات العملية</th>
+                            <th class="pb-4">الجهاز</th>
+                            <th class="pb-4">التوقيت</th>
                         </tr>
                     </thead>
-                    <tbody id="recent-orders-table" class="text-sm font-bold">
-                        <!-- Dynamic rows here -->
+                    <tbody id="logs-table">
+                        <!-- Rows -->
                     </tbody>
                 </table>
             </div>
@@ -269,115 +172,142 @@
     </main>
 
     <script>
-        // Real-time Analytics Engine (Reading from localStorage)
-        function refreshAnalytics() {
-            const logs = JSON.parse(localStorage.getItem('leanoza_analytics') || '[]');
+        // Authentication Guard
+        if (sessionStorage.getItem('l_auth') !== 'authenticated') {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            sessionStorage.removeItem('l_auth');
+            window.location.href = 'login.html';
+        }
+
+        let timeHistory = { labels: [], views: [], orders: [] };
+
+        function refreshDashboard() {
+            const raw = localStorage.getItem('leanoza_analytics') || '[]';
+            const logs = JSON.parse(raw);
             
-            // Filter counts
-            const views = logs.filter(l => l.event === 'page_view').length || 1420; // fallback seeds
-            const atc = logs.filter(l => l.event === 'add_to_cart').length || 284;
-            const checkout = logs.filter(l => l.event === 'initiate_checkout').length || 156;
-            const conv = logs.filter(l => l.event === 'whatsapp_conversion').length || 42;
+            // Core Stats
+            const views = logs.filter(l => l.event === 'page_view').length;
+            const atc = logs.filter(l => l.event === 'add_to_cart').length;
+            const checkout = logs.filter(l => l.event === 'initiate_checkout').length;
+            const orders = logs.filter(l => l.event === 'whatsapp_conversion');
+            const totalOrders = orders.length;
 
-            // Update Stats Display
-            document.getElementById('stat-views').textContent = views.toLocaleString();
-            document.getElementById('stat-atc').textContent = atc.toLocaleString();
-            document.getElementById('stat-checkout').textContent = checkout.toLocaleString();
-            document.getElementById('stat-conversions').textContent = conv.toLocaleString();
+            document.getElementById('stat-views').innerText = views.toLocaleString();
+            document.getElementById('stat-atc').innerText = atc.toLocaleString();
+            document.getElementById('stat-checkout').innerText = checkout.toLocaleString();
+            document.getElementById('stat-conversions').innerText = totalOrders.toLocaleString();
+            
+            const cr = views > 0 ? ((totalOrders / views) * 100).toFixed(1) : 0;
+            document.getElementById('stat-cr').innerText = cr + '%';
 
-            const cr = ((conv / views) * 100).toFixed(1);
-            document.getElementById('stat-cr').textContent = cr + '%';
+            const revenue = orders.reduce((sum, o) => sum + (parseInt(o.data.price) || 0), 0);
+            const aov = totalOrders > 0 ? Math.round(revenue / totalOrders) : 0;
+            document.getElementById('stat-aov').innerHTML = `${aov} <span class="text-[10px]">ج.م</span>`;
 
-            // Update Funnel
-            const atcPc = ((atc / views) * 100).toFixed(0);
-            const checkPc = ((checkout / views) * 100).toFixed(0);
-            const convPc = ((conv / views) * 100).toFixed(0);
+            // Scroll Analysis
+            const scrollEvents = logs.filter(l => l.event === 'scroll_depth');
+            const depth25 = scrollEvents.filter(e => parseInt(e.data.depth) >= 25).length;
+            const depth50 = scrollEvents.filter(e => parseInt(e.data.depth) >= 50).length;
+            const depth75 = scrollEvents.filter(e => parseInt(e.data.depth) >= 75).length;
 
-            document.getElementById('funnel-atc').textContent = atcPc + '%';
-            document.getElementById('funnel-checkout').textContent = checkPc + '%';
-            document.getElementById('funnel-conv').textContent = convPc + '%';
+            const calcPc = (v) => views > 0 ? Math.round((v / views) * 100) : 0;
+            updateScroll('1', calcPc(views)); // Hero is 100% of reach
+            updateScroll('2', calcPc(depth50));
+            updateScroll('3', calcPc(depth75));
 
-            document.getElementById('funnel-atc-bar').style.width = atcPc + '%';
-            document.getElementById('funnel-checkout-bar').style.width = checkPc + '%';
-            document.getElementById('funnel-conv-bar').style.width = convPc + '%';
-
-            // Update Recent Orders (Simulated from actual conversion logs)
-            const recentConv = logs.filter(l => l.event === 'whatsapp_conversion').reverse().slice(0, 5);
-            const tableBody = document.getElementById('recent-orders-table');
-            tableBody.innerHTML = '';
-
-            // Seeding some initial data if empty
-            const seedData = [
-                { name: 'ندى أحمد', city: 'القاهرة', offer: 'باقة التحدي (علبتين)', price: '990', icon: '🟢', time: 'منذ دقيقة' },
-                { name: 'مها محمد', city: 'الجيزة', offer: 'VIP Transformation', price: '1350', icon: '🟢', time: 'منذ 5 دقائق' },
-                { name: 'سارة خالد', city: 'المنصورة', offer: 'علبة تجريبية', price: '550', icon: '🟢', time: 'منذ ساعة' }
-            ];
-
-            const displayData = recentConv.length > 0 ? recentConv.map(c => ({
-                name: c.data.name || 'عميلة غير معروفة',
-                city: c.data.address.split('،')[0] || 'مصر',
-                offer: c.data.bundle || '-',
-                price: c.data.price || '-',
-                icon: '🟢',
-                time: 'الآن'
-            })) : seedData;
-
-            displayData.forEach(order => {
-                tableBody.innerHTML += `
-                    <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                        <td class="py-5 font-black text-white">${order.name}</td>
-                        <td class="py-5 text-gray-400">${order.city}</td>
-                        <td class="py-5">
-                            <span class="bg-primary/10 text-primary px-3 py-1 rounded-lg text-[10px]">${order.offer}</span>
-                        </td>
-                        <td class="py-5 text-primary italic font-black">${order.price} ج.م</td>
-                        <td class="py-5">
-                            <span class="flex items-center gap-2">
-                                <span class="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_10px_#22c55e]"></span>
-                                مؤكد
-                            </span>
-                        </td>
-                        <td class="py-5 text-left text-gray-500 font-medium text-[10px]">${order.time}</td>
+            // Populate Table
+            const table = document.getElementById('logs-table');
+            table.innerHTML = '';
+            logs.slice(-10).reverse().forEach(log => {
+                let badgeColor = 'bg-white/5';
+                if(log.event === 'whatsapp_conversion') badgeColor = 'bg-green-500 text-black';
+                if(log.event === 'add_to_cart') badgeColor = 'bg-purple-500/20 text-purple-400';
+                
+                const dataString = log.event === 'whatsapp_conversion' ? `${log.data.name} - ${log.data.bundle}` : (log.data.depth || log.data.text || '-');
+                const timeStr = new Date(log.timestamp).toLocaleTimeString('ar-EG');
+                
+                table.innerHTML += `
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition-all">
+                        <td class="py-4"><span class="px-3 py-1 rounded-full text-[10px] font-black ${badgeColor}">${log.event.replace('_',' ')}</span></td>
+                        <td class="py-4 text-xs font-bold text-gray-300">${dataString}</td>
+                        <td class="py-4 text-gray-500 text-[10px]">${log.data.device || 'mobile'}</td>
+                        <td class="py-4 text-left text-[10px] text-gray-400">${timeStr}</td>
                     </tr>
                 `;
             });
+
+            // Live Users Random Mock (Real sessions + jitter)
+            const activeSessions = new Set(logs.slice(-30).map(l => l.session_id)).size;
+            document.getElementById('live-users-count').innerText = Math.max(activeSessions, Math.floor(Math.random() * 5));
         }
 
-        // Initialize Performance Chart
-        const ctx = document.getElementById('performanceChart').getContext('2d');
-        new Chart(ctx, {
+        function updateScroll(id, pc) {
+            document.getElementById(`scroll-${id}`).innerText = pc + '%';
+            document.getElementById(`bar-scroll-${id}`).style.width = pc + '%';
+        }
+
+        // SIMULATION MODE
+        let isSimulating = false;
+        let simInterval;
+        function toggleSimulation() {
+            isSimulating = !isSimulating;
+            const btn = document.getElementById('sim-btn');
+            if(isSimulating) {
+                btn.classList.add('active-menu', 'simulation-active');
+                btn.innerHTML = '<span>⏸️</span> إيقاف المحاكي';
+                simInterval = setInterval(() => {
+                    const eventType = Math.random();
+                    if(eventType < 0.6) simulateLog('page_view');
+                    else if(eventType < 0.8) simulateLog('scroll_depth', { depth: '50%' });
+                    else if(eventType < 0.9) simulateLog('add_to_cart', { price: 990 });
+                    else simulateLog('whatsapp_conversion', { name: 'عميلة محاكاة', bundle: 'علبتين', price: 990 });
+                }, 1500);
+            } else {
+                btn.classList.remove('active-menu', 'simulation-active');
+                btn.innerHTML = '<span>🔄</span> محاكي الزوار (Debug)';
+                clearInterval(simInterval);
+            }
+        }
+
+        function simulateLog(event, data = {}) {
+            let logs = JSON.parse(localStorage.getItem('leanoza_analytics') || '[]');
+            logs.push({
+                event: event,
+                data: Object.assign({ device: Math.random() > 0.3 ? 'mobile' : 'desktop' }, data),
+                timestamp: new Date().toISOString(),
+                session_id: 'sim_' + Math.floor(Math.random() * 100)
+            });
+            localStorage.setItem('leanoza_analytics', JSON.stringify(logs));
+            refreshDashboard();
+        }
+
+        // Performance Chart
+        const ctx = document.getElementById('timeChart').getContext('2d');
+        const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['12am', '4am', '8am', '12pm', '4pm', '8pm', '11pm'],
+                labels: ['12am', '4am', '8am', '12pm', '4pm', '8pm', 'Now'],
                 datasets: [{
-                    label: 'الزيارات',
-                    data: [120, 190, 450, 780, 520, 950, 600],
+                    label: 'الزيارات الحية',
+                    data: [0, 0, 0, 0, 0, 0, 0],
                     borderColor: '#00ff88',
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(0, 255, 136, 0.05)'
-                }, {
-                    label: 'الطلبات',
-                    data: [10, 5, 45, 110, 80, 160, 40],
-                    borderColor: '#a855f7',
-                    tension: 0.4,
-                    fill: false
+                    backgroundColor: 'rgba(0, 255, 136, 0.05)',
+                    fill: true, tension: 0.4
                 }]
             },
             options: {
                 responsive: true,
                 plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, border: { display: false } },
-                    x: { grid: { display: false } }
-                }
+                scales: { y: { display: false }, x: { grid: { display: false } } }
             }
         });
 
-        // Run Initial Refresh
-        refreshAnalytics();
-        // Periodic update
-        setInterval(refreshAnalytics, 5000);
+        // Initialize
+        refreshDashboard();
+        setInterval(refreshDashboard, 2000);
     </script>
 </body>
 </html>

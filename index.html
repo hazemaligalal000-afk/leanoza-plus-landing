@@ -1005,22 +1005,50 @@
             logs.push({
                 event: event,
                 data: data,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                session_id: sessionStorage.getItem('l_session') || 'new-session'
             });
-            if(logs.length > 2000) logs.shift(); // Limit logs
+            if(logs.length > 3000) logs.shift(); 
             localStorage.setItem('leanoza_analytics', JSON.stringify(logs));
         }
 
-        // Track Page View
-        logAnalyticsEvent('page_view', { title: document.title, url: window.location.href });
+        // Initialize Session
+        if(!sessionStorage.getItem('l_session')) {
+            sessionStorage.setItem('l_session', 'sess_' + Math.random().toString(36).substr(2, 9));
+        }
 
-        // Track Initiate Checkout
-        let checkoutStarted = false;
-        document.addEventListener('focusin', (e) => {
-            if (e.target.closest('#purchaseForm') && !checkoutStarted) {
-                logAnalyticsEvent('initiate_checkout');
-                checkoutStarted = true;
+        // Track Page View & Metadata
+        logAnalyticsEvent('page_view', { 
+            title: document.title, 
+            url: window.location.href,
+            device: window.innerWidth < 768 ? 'mobile' : 'desktop',
+            referrer: document.referrer || 'direct'
+        });
+
+        // Advanced Scroll Tracking
+        let maxScroll = 0;
+        window.addEventListener('scroll', () => {
+            const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100);
+            if (scrollPercent > maxScroll && scrollPercent % 25 === 0) {
+                maxScroll = scrollPercent;
+                logAnalyticsEvent('scroll_depth', { depth: maxScroll + '%' });
             }
+        });
+
+        // Track All Button Clicks
+        document.querySelectorAll('button, a.btn-premium').forEach(btn => {
+            btn.addEventListener('click', function() {
+                logAnalyticsEvent('button_click', { 
+                    text: this.innerText.trim() || 'icon_button',
+                    id: this.id || 'no_id'
+                });
+            });
+        });
+
+        // Track Time on Page
+        let startTime = Date.now();
+        window.addEventListener('beforeunload', () => {
+            logAnalyticsEvent('time_on_page', { seconds: Math.floor((Date.now() - startTime) / 1000) });
         });
 
         // Inline Form Validation Cues
