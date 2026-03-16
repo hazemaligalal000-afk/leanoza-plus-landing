@@ -235,8 +235,8 @@
         <div class="container mx-auto flex flex-col md:flex-row items-center gap-12 relative z-10">
             <!-- Content Left -->
             <div class="w-full md:w-3/5 space-y-8 text-center md:text-right animate-slide-up">
-                <div class="inline-flex items-center gap-2 bg-white/50 backdrop-blur-md border border-purple-100 text-primary px-6 py-2 rounded-full text-sm font-extrabold shadow-sm">
-                    <span class="animate-pulse">🟢</span> متاح الآن في مصر - شحن مجاني
+                <div class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-6 py-2 rounded-full text-sm font-extrabold shadow-sm">
+                    <span class="animate-pulse w-2.5 h-2.5 rounded-full bg-red-600 block shadow-[0_0_10px_rgba(220,38,38,0.8)]"></span> <span id="live-viewers">124</span> شخص يشاهدون العرض الآن!
                 </div>
                 <h1 id="hero-main-title" class="text-5xl md:text-7xl font-black text-dark leading-[1.15]">
                     وداعاً للدهون.. <br>
@@ -1371,6 +1371,61 @@
                 }, 2000);
             }, 1500);
         });
+
+        // Track Initiate Checkout Log
+        let checkoutLogged = false;
+        document.getElementById('purchaseForm').addEventListener('focusin', function() {
+            if(!checkoutLogged) {
+                logAnalyticsEvent('initiate_checkout', { form_started: true });
+                checkoutLogged = true;
+            }
+        });
+
+        // Live Viewers Logic
+        setInterval(() => {
+            const el = document.getElementById('live-viewers');
+            if(el) {
+                let current = parseInt(el.innerText);
+                let diff = Math.floor(Math.random() * 5) - 2;
+                if (current + diff < 40) diff = 3;
+                if (current + diff > 250) diff = -4;
+                el.innerText = current + diff;
+            }
+        }, 6000);
+
+        // Live Sales Notification (FOMO)
+        const toastEl = document.getElementById('sales-toast');
+        const citiesList = (config['cities'] || 'القاهرة،الجيزة،الإسكندرية،طنطا').split('،').map(s=>s.trim());
+        const namesList = ['أحمد', 'محمد', 'سارة', 'فاطمة', 'عمر', 'محمود', 'منى', 'هدى', 'نور', 'مصطفى'];
+        
+        setTimeout(() => {
+            setInterval(() => {
+                if(toastEl && !document.hidden && window.scrollY > 300) {
+                    const rName = namesList[Math.floor(Math.random()*namesList.length)];
+                    const rCity = citiesList[Math.floor(Math.random()*citiesList.length)];
+                    document.getElementById('toast-name').innerText = `${rName} من ${rCity}`;
+                    document.getElementById('toast-time').innerText = Math.floor(Math.random() * 10) + 1;
+                    
+                    toastEl.classList.remove('translate-y-32', 'opacity-0');
+                    setTimeout(() => {
+                        toastEl.classList.add('translate-y-32', 'opacity-0');
+                    }, 5000);
+                }
+            }, (config['notif-freq'] || 15) * 1000);
+        }, 3000);
+        
     </script>
+
+    <!-- Real-time Sales Toast -->
+    <div id="sales-toast" class="fixed bottom-6 right-6 lg:right-auto lg:left-6 z-[2000] bg-white text-dark p-4 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border-r-4 border-green-500 translate-y-32 opacity-0 transition-transform duration-700 flex items-center gap-4 max-w-sm w-[90vw] md:w-auto rtl pointer-events-none">
+        <div class="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center text-2xl flex-shrink-0 animate-pulse">
+            🛍️
+        </div>
+        <div>
+            <p class="text-sm font-black m-0" id="toast-name">محمد من القاهرة</p>
+            <p class="text-xs text-gray-500 m-0 mt-1 font-bold">قام بشراء باقة التحدي VIP للتو!</p>
+            <p class="text-[10px] text-green-600 font-extrabold m-0 mt-1 tracking-wider">منذ <span id="toast-time">1</span> دقيقة</p>
+        </div>
+    </div>
 </body>
 </html>
