@@ -999,6 +999,30 @@
         let selectedQty = 2;
         let crossSellActive = false;
 
+        // Analytics Tracking System
+        function logAnalyticsEvent(event, data = {}) {
+            let logs = JSON.parse(localStorage.getItem('leanoza_analytics') || '[]');
+            logs.push({
+                event: event,
+                data: data,
+                timestamp: new Date().toISOString()
+            });
+            if(logs.length > 2000) logs.shift(); // Limit logs
+            localStorage.setItem('leanoza_analytics', JSON.stringify(logs));
+        }
+
+        // Track Page View
+        logAnalyticsEvent('page_view', { title: document.title, url: window.location.href });
+
+        // Track Initiate Checkout
+        let checkoutStarted = false;
+        document.addEventListener('focusin', (e) => {
+            if (e.target.closest('#purchaseForm') && !checkoutStarted) {
+                logAnalyticsEvent('initiate_checkout');
+                checkoutStarted = true;
+            }
+        });
+
         // Inline Form Validation Cues
         document.querySelectorAll('#purchaseForm input').forEach(input => {
             input.addEventListener('input', function() {
@@ -1051,6 +1075,8 @@
             const prices = { 1: 550, 2: 990, 3: 1350 };
             currentPrice = prices[selectedQty];
             
+            logAnalyticsEvent('add_to_cart', { bundle: selectedQty, price: currentPrice });
+
             // Sync with visual cards
             document.querySelectorAll('.bundle-card').forEach((card, idx) => {
                 if(idx + 1 == selectedQty) card.classList.add('active');
@@ -1064,6 +1090,8 @@
             selectedQty = qty;
             currentPrice = price;
             
+            logAnalyticsEvent('add_to_cart', { bundle: qty, price: price });
+
             // Update UI
             document.querySelectorAll('.bundle-card').forEach(card => card.classList.remove('active'));
             const activeCard = document.querySelectorAll('.bundle-card')[qty-1];
@@ -1129,6 +1157,14 @@
             const extra = crossSellActive ? "نعم (شاي ديتوكس)" : "لا";
             const finalPrice = currentPrice + (crossSellActive ? 150 : 0);
             const deliveryDate = document.getElementById('delivery-date-calc').textContent;
+
+            // Log Conversion for Dashboard
+            logAnalyticsEvent('whatsapp_conversion', { 
+                name, 
+                address, 
+                bundle, 
+                price: finalPrice 
+            });
 
             // Professional WhatsApp Message Construction
             const message = `*طلب جديد - LEANZA PLUS* 🛒\n` +
