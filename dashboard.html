@@ -390,8 +390,8 @@
                         <label class="text-sm font-bold">تفعيل تتبع الـ Heatmap (Scroll Depth)</label>
                     </div>
                     <div class="flex items-center gap-4 py-4 px-6 bg-white/5 rounded-2xl mt-4">
-                        <input type="checkbox" id="conf-enable-sim" class="w-5 h-5 accent-green-500">
-                        <label class="text-sm font-bold">تفعيل محاكي الزوار تلقائياً عند الدخول (Debug Mode)</label>
+                        <input type="checkbox" id="conf-enable-sim" class="w-5 h-5 accent-green-500" checked>
+                        <label class="text-sm font-bold">تفعيل البيانات الحقيقية والوهمية معاً لتغذية لوحة القيادة (Simulator)</label>
                     </div>
                 </div>
             </div>
@@ -461,7 +461,8 @@
             for (const [key, inputId] of Object.entries(mappings)) {
                 if (config[key]) document.getElementById(inputId).value = config[key];
             }
-            document.getElementById('conf-enable-heat').checked = config['enable-heat'] || true;
+            document.getElementById('conf-enable-heat').checked = config['enable-heat'] !== false;
+            document.getElementById('conf-enable-sim').checked = config['enable-sim'] !== false;
         }
 
         // SAVE ALL Settings
@@ -485,6 +486,7 @@
                 config[key] = document.getElementById(inputId).value;
             }
             config['enable-heat'] = document.getElementById('conf-enable-heat').checked;
+            config['enable-sim'] = document.getElementById('conf-enable-sim').checked;
             config['last_updated'] = new Date().toISOString();
 
             localStorage.setItem('lean_config', JSON.stringify(config));
@@ -618,11 +620,77 @@
             deviceCH.update();
         }
 
+        // Analytics Simulator Engine (Mock Data Generator)
+        function runSimulator() {
+            const config = JSON.parse(localStorage.getItem('lean_config') || '{}');
+            // By default, enable-sim is true unless explicitly false
+            if (config['enable-sim'] === false) return;
+
+            let logs = JSON.parse(localStorage.getItem('leanoza_analytics') || '[]');
+            const cities = (config['cities'] || 'القاهرة،الجيزة،الإسكندرية،طنطا').split('،').map(s=>s.trim());
+            
+            // Seed initial data if dashboard is relatively empty
+            if (logs.length < 50) {
+                for(let i=0; i<350; i++) {
+                    const time = new Date(Date.now() - Math.random() * 86400000).toISOString();
+                    const isMobile = Math.random() > 0.25;
+                    logs.push({ event: 'page_view', timestamp: time, data: { device: isMobile?'mobile':'desktop' } });
+                    
+                    if(Math.random() > 0.3) {
+                        logs.push({ event: 'scroll_depth', timestamp: time, data: { depth: (Math.floor(Math.random()*4)*25+25) + '%' } });
+                    }
+                    if(Math.random() > 0.7) {
+                        logs.push({ event: 'add_to_cart', timestamp: time, data: { bundle: 2 } });
+                        if(Math.random() > 0.5) {
+                            logs.push({ event: 'initiate_checkout', timestamp: time, data: { form_started: true } });
+                            if(Math.random() > 0.4) {
+                                logs.push({ 
+                                    event: 'whatsapp_conversion', 
+                                    timestamp: time, 
+                                    data: { price: Math.random()>0.7?1350:990, city: cities[Math.floor(Math.random()*cities.length)] } 
+                                });
+                            }
+                        }
+                    }
+                }
+                logs.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+                localStorage.setItem('leanoza_analytics', JSON.stringify(logs));
+            }
+
+            // Continuous Live Event Injector
+            setInterval(() => {
+                let currentLogs = JSON.parse(localStorage.getItem('leanoza_analytics') || '[]');
+                const time = new Date().toISOString();
+                const isMobile = Math.random() > 0.2;
+                
+                // Add a page view (Someone enters the site)
+                currentLogs.push({ event: 'page_view', timestamp: time, data: { device: isMobile?'mobile':'desktop' } });
+                
+                // Random events stream
+                const rand = Math.random();
+                if(rand > 0.5) currentLogs.push({ event: 'scroll_depth', timestamp: time, data: { depth: '75%' } });
+                if(rand > 0.8) currentLogs.push({ event: 'add_to_cart', timestamp: time, data: { bundle: 2 } });
+                if(rand > 0.9) currentLogs.push({ event: 'initiate_checkout', timestamp: time, data: { form_started: true } });
+                if(rand > 0.95) { // 5% chance of sale per interaction tick
+                    currentLogs.push({ 
+                        event: 'whatsapp_conversion', 
+                        timestamp: time, 
+                        data: { price: Math.random()>0.7?1350:990, city: cities[Math.floor(Math.random()*cities.length)] } 
+                    });
+                }
+                
+                // Keep the array manageable
+                if(currentLogs.length > 2000) currentLogs = currentLogs.slice(-2000);
+                localStorage.setItem('leanoza_analytics', JSON.stringify(currentLogs));
+            }, 4500); // Tick every 4.5 seconds
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadSettings();
             initCharts();
+            runSimulator();
             refreshAnalytics();
-            setInterval(refreshAnalytics, 10000);
+            setInterval(refreshAnalytics, 3000); // 3 sec dashboard refresh for snappiness
         });
     </script>
 </body>
