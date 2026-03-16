@@ -47,6 +47,26 @@
                 const currentText = a.href.split('text=')[1] || 'أريد طلب منتج لينوزا بلس';
                 a.href = `https://wa.me/${waNum}?text=${currentText}`;
             });
+
+            // Meta Pixel (CAPI Bridge) Dynamic Injection
+            if(config['pixel-id']) {
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+                
+                // Advanced Matching & Deduplication Setup
+                const fbp = document.cookie.split('; ').find(row => row.startsWith('_fbp='))?.split('=')[1] || '';
+                const fbc = document.cookie.split('; ').find(row => row.startsWith('_fbc='))?.split('=')[1] || '';
+                
+                fbq('init', config['pixel-id']);
+                fbq('track', 'PageView', { eventID: 'page_view_' + Date.now() });
+                window.dynamicFbq = fbq; // Export globally for other events
+            }
         });
     </script>
     <meta name="description" content="اخسر وزنك بسرعة وأمان مع كبسولات لينوزا بلس البريطانية. حرق دهون، سد شهية، ومكونات طبيعية 100%. اطلب الآن بخصم 50% في مصر!">
@@ -1209,6 +1229,7 @@
             currentPrice = prices[selectedQty];
             
             logAnalyticsEvent('add_to_cart', { bundle: selectedQty, price: currentPrice });
+            if(window.dynamicFbq) window.dynamicFbq('track', 'AddToCart', { value: currentPrice, currency: 'EGP', content_ids: ['bundle_' + selectedQty], eventID: 'atc_' + Date.now() });
 
             // Sync with visual cards
             document.querySelectorAll('.bundle-card').forEach((card, idx) => {
@@ -1224,6 +1245,7 @@
             currentPrice = price;
             
             logAnalyticsEvent('add_to_cart', { bundle: qty, price: price });
+            if(window.dynamicFbq) window.dynamicFbq('track', 'AddToCart', { value: price, currency: 'EGP', content_ids: ['bundle_' + qty], eventID: 'atc_' + Date.now() });
 
             // Update UI
             document.querySelectorAll('.bundle-card').forEach(card => card.classList.remove('active'));
@@ -1330,6 +1352,16 @@
                 price: finalPrice 
             });
 
+            // Meta Pixel Purchase Event
+            if(window.dynamicFbq && finalPrice > 0) {
+                window.dynamicFbq('track', 'Purchase', { 
+                    value: finalPrice, 
+                    currency: 'EGP', 
+                    content_name: bundle,
+                    eventID: 'pur_' + phone + '_' + Date.now() 
+                }, { eventID: 'pur_' + phone + '_' + Date.now() });
+            }
+
             // Professional WhatsApp Message Construction
             const message = `*طلب جديد - LEANZA PLUS* 🛒\n` +
                             `--------------------------\n` +
@@ -1377,6 +1409,7 @@
         document.getElementById('purchaseForm').addEventListener('focusin', function() {
             if(!checkoutLogged) {
                 logAnalyticsEvent('initiate_checkout', { form_started: true });
+                if(window.dynamicFbq) window.dynamicFbq('track', 'InitiateCheckout', { eventID: 'ic_' + Date.now() });
                 checkoutLogged = true;
             }
         });
