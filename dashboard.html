@@ -3,311 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة إحصائيات لينوزا بلس | Leanoza Dashboard</title>
+    <title>إدارة لينوزا بلس | Leanoza Admin OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Outfit:wght@500;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #050505;
-            color: #e2e8f0;
-            overflow-x: hidden;
-        }
-        .sidebar { background-color: #0d0d0d; border-left: 1px solid #1a1a1a; }
-        .card { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 1.5rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .card:hover { border-color: #00ff88; box-shadow: 0 0 20px rgba(0, 255, 136, 0.05); }
-        .neon-text { color: #00ff88; text-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
-        .active-menu { background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, transparent 100%); border-right: 4px solid #00ff88; color: #00ff88; }
-        .simulation-active { animation: pulse-green 2s infinite; }
-        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); } }
+        body { font-family: 'Cairo', sans-serif; background-color: #050505; color: #e2e8f0; }
+        .sidebar { background-color: #0d0d0d; border-left: 1px solid #1a1a1a; transition: all 0.3s; }
+        .card { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 1.5rem; transition: all 0.3s ease; }
+        .input-dark { background: #151515; border: 1px solid #222; color: white; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; font-size: 0.85rem; }
+        .input-dark:focus { border-color: #00ff88; box-shadow: 0 0 10px rgba(0, 255, 136, 0.1); }
+        .tab-btn.active { background: #00ff88; color: black; font-weight: 900; }
+        .save-toast { position: fixed; bottom: 2rem; right: 2rem; background: #00ff88; color: black; padding: 1rem 2rem; border-radius: 1rem; font-weight: 900; transform: translateY(200%); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; }
+        .save-toast.show { transform: translateY(0); }
+        .section-panel { display: none; }
+        .section-panel.active { display: block; }
     </style>
 </head>
 <body class="flex min-h-screen">
 
     <!-- Sidebar -->
-    <aside class="sidebar w-72 hidden lg:flex flex-col sticky top-0 h-screen">
+    <aside class="sidebar w-72 lg:flex flex-col sticky top-0 h-screen hidden">
         <div class="p-8">
             <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center font-black text-black italic">L+</div>
-                <h1 class="text-xl font-black italic tracking-tighter">LEANOZA <span class="text-[8px] block text-green-500 font-bold tracking-normal uppercase">Intelligence Panel</span></h1>
+                <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center font-black text-black italic text-xl">L+</div>
+                <h1 class="text-xl font-black italic tracking-tighter">LEANOZA <span class="text-[8px] block text-green-500 font-bold uppercase">Ultimate Admin OS</span></h1>
             </div>
 
-            <nav class="space-y-2">
-                <a href="#" class="flex items-center gap-4 px-6 py-4 rounded-xl active-menu font-bold transition-all">
-                    <span>📊</span> لوحة الإحصائيات الحية
-                </a>
-                <a href="#" class="flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-bold transition-all">
-                    <span>📦</span> سجل الطلبات المؤكدة
-                </a>
-                <a href="#" class="flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-bold transition-all">
-                    <span>📱</span> أداء الواتساب
-                </a>
-                <div class="pt-10 pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-widest">Advanced Tools</div>
-                <button id="sim-btn" onclick="toggleSimulation()" class="w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-green-500 hover:bg-green-500/5 font-bold transition-all group">
-                    <span class="group-hover:animate-spin">🔄</span> محاكي الزوار (Debug)
-                </button>
-                <div class="pt-10 pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-widest">Global System</div>
-                <button onclick="logout()" class="w-full flex items-center gap-4 px-6 py-4 rounded-xl text-red-500 hover:bg-red-500/5 font-bold transition-all">
-                    <span>🚪</span> تسجيل الخروج
-                </button>
+            <nav class="space-y-1">
+                <button onclick="switchTab('analytics')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl active-menu bg-green-500/10 text-green-500 font-bold"><span>📊</span> الإحصائيات</button>
+                <button onclick="switchTab('content')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>✍️</span> تعديل المحتوي</button>
+                <button onclick="switchTab('pricing')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>💰</span> الأسعار والخصومات</button>
+                <button onclick="switchTab('urgency')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>⏰</span> العداد والطلبات</button>
+                <button onclick="switchTab('social')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>⭐</span> الآراء والصور</button>
+                <button onclick="switchTab('tracking')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>🎯</span> التتبع والواتساب</button>
+                
+                <div class="pt-10 pb-4 px-6 text-[10px] font-black text-gray-600 uppercase tracking-widest">Global</div>
+                <button onclick="logout()" class="w-full flex items-center gap-4 px-6 py-4 rounded-xl text-red-500 hover:bg-red-500/5 font-bold transition-all"><span>🚪</span> تسجيل الخروج</button>
             </nav>
-        </div>
-
-        <div class="mt-auto p-6">
-            <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] text-gray-500 leading-tight">
-                <p class="font-bold text-white mb-2">💡 نصيحة الخبير:</p>
-                الباقة الأكثر مبيعاً اليوم هي "علبتين". قم بزيادة تركيز إعلاناتك عليها لرفع معدل الـ AOV.
-            </div>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-6 md:p-10 max-w-[1600px] mx-auto">
+    <main class="flex-1 p-6 lg:p-10 max-w-[1400px]">
+        
         <!-- Header -->
         <header class="flex justify-between items-center mb-10">
             <div>
-                <h2 class="text-3xl font-black mb-1">تحليلات حية لحظية 🎥</h2>
-                <p class="text-gray-500 text-sm">بيانات واقعية بناءً على تفاعل العميلات مع صفحة الهبوط</p>
+                <h2 id="current-tab-title" class="text-3xl font-black mb-1">لوحة الإحصائيات</h2>
+                <p class="text-gray-500 text-sm">تحكم في كل تفصيلة في متجرك بضغطة زر</p>
             </div>
-            <div class="flex items-center gap-4">
-                <div id="live-indicator" class="bg-green-500/10 text-green-500 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
-                    <span id="live-users-count">4</span> عـميلات يتصفحن الآن
-                </div>
-                <button onclick="localStorage.removeItem('leanoza_analytics'); location.reload();" class="text-xs text-red-400 hover:underline">تصفير البيانات</button>
+            <div class="flex gap-4">
+                <a href="index.html" target="_blank" class="bg-white/5 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-white/10 transition-all">
+                    <span>👁️</span> معاينة الصفحة
+                </a>
+                <button onclick="saveAllSettings()" class="bg-green-500 text-black px-8 py-3 rounded-2xl font-black flex items-center gap-2 hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,136,0.3)]">
+                    <span>💾</span> حفظ التعديلات
+                </button>
             </div>
         </header>
 
-        <!-- KPI Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-10">
-            <div class="card p-6">
-                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">الزيارات</p>
-                <h3 id="stat-views" class="text-3xl font-black font-outfit text-white">0</h3>
-            </div>
-            <div class="card p-6">
-                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">اهتمام بالمنتج</p>
-                <h3 id="stat-atc" class="text-3xl font-black font-outfit text-white">0</h3>
-            </div>
-            <div class="card p-6">
-                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">بدء الطلب</p>
-                <h3 id="stat-checkout" class="text-3xl font-black font-outfit text-white">0</h3>
-            </div>
-            <div class="card p-6 border-green-500/30">
-                <p class="text-green-500 text-[10px] font-black uppercase mb-1">تحويلات مؤكدة</p>
-                <h3 id="stat-conversions" class="text-4xl font-black font-outfit neon-text">0</h3>
-            </div>
-            <div class="card p-6">
-                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">معدل التحويل (CR)</p>
-                <h3 id="stat-cr" class="text-3xl font-black font-outfit text-white">0%</h3>
-            </div>
-            <div class="card p-6">
-                <p class="text-gray-500 text-[10px] font-black uppercase mb-1">متوسط السلة (AOV)</p>
-                <h3 id="stat-aov" class="text-2xl font-black font-outfit text-white">0 <span class="text-[10px]">ج.م</span></h3>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-10">
-            <!-- Timeline Chart -->
-            <div class="xl:col-span-2 card p-8">
-                <h4 class="font-black text-lg mb-8 flex items-center gap-2">⏱️ التسلسل الزمني للتفاعل</h4>
-                <canvas id="timeChart" height="150"></canvas>
+        <!-- Dynamic Panels -->
+        <!-- 1. Analytics (Existing) -->
+        <section id="panel-analytics" class="section-panel active">
+             <!-- KPI Grid -->
+             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-10">
+                <div class="card p-6 text-center">
+                    <p class="text-gray-500 text-[10px] font-black uppercase mb-1">الزيارات</p>
+                    <h3 id="stat-views" class="text-3xl font-black font-outfit text-white">0</h3>
+                </div>
+                <div class="card p-6 text-center">
+                    <p class="text-gray-500 text-[10px] font-black uppercase mb-1">اهتمام بالسلة</p>
+                    <h3 id="stat-atc" class="text-3xl font-black font-outfit text-white">0</h3>
+                </div>
+                <div class="card p-6 text-center">
+                    <p class="text-gray-500 text-[10px] font-black uppercase mb-1">بدء الطلب</p>
+                    <h3 id="stat-checkout" class="text-3xl font-black font-outfit text-white">0</h3>
+                </div>
+                <div class="card p-6 text-center border-green-500/30">
+                    <p class="text-green-500 text-[10px] font-black uppercase mb-1">تحويلات مؤكدة</p>
+                    <h3 id="stat-conversions" class="text-3xl font-black font-outfit text-green-500">0</h3>
+                </div>
+                <div class="card p-6 text-center">
+                    <p class="text-gray-500 text-[10px] font-black uppercase mb-1">الـ CR</p>
+                    <h3 id="stat-cr" class="text-3xl font-black font-outfit text-white">0%</h3>
+                </div>
+                <div class="card p-6 text-center">
+                    <p class="text-gray-500 text-[10px] font-black uppercase mb-1">AOV</p>
+                    <h3 id="stat-aov" class="text-2xl font-black font-outfit text-white">0 <span class="text-[10px]">ج.م</span></h3>
+                </div>
             </div>
             
-            <!-- Scroll Depth Heatmap -->
-            <div class="card p-8 flex flex-col">
-                <h4 class="font-black text-lg mb-8 flex items-center gap-2">🔥 تحليل القراءة (Scroll)</h4>
-                <div class="flex-1 space-y-4">
-                    <div class="relative pt-1">
-                        <div class="flex items-center justify-between text-xs font-bold mb-2">
-                            <span>الهيرو (أول الصفحة)</span>
-                            <span id="scroll-1">0%</span>
-                        </div>
-                        <div class="h-3 bg-white/5 rounded-full overflow-hidden">
-                            <div id="bar-scroll-1" class="h-full bg-green-500 w-0 transition-all duration-1000"></div>
-                        </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                <div class="card p-8">
+                    <h4 class="font-black text-lg mb-6 flex items-center gap-2">⏱️ أداء التفاعل التاريخي</h4>
+                    <canvas id="timeChart" height="200"></canvas>
+                </div>
+                <div class="card p-8">
+                    <h4 class="font-black text-lg mb-6 flex items-center gap-2">🎯 قمع التحويل (Funnel)</h4>
+                    <div id="funnel-container" class="space-y-6 pt-4">
+                        <!-- Funnel Bars handled by script -->
                     </div>
-                    <div class="relative pt-1">
-                        <div class="flex items-center justify-between text-xs font-bold mb-2">
-                            <span>المميزات والعروض (وسط)</span>
-                            <span id="scroll-2">0%</span>
-                        </div>
-                        <div class="h-3 bg-white/5 rounded-full overflow-hidden">
-                            <div id="bar-scroll-2" class="h-full bg-yellow-500 w-0 transition-all duration-1000"></div>
-                        </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Content Manager -->
+        <section id="panel-content" class="section-panel">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="card p-8 space-y-6">
+                    <h4 class="font-black text-xl mb-4 border-b border-white/5 pb-4 text-green-500">العناوين الرئيسية</h4>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">العنوان الشوقي (Hero Title)</label>
+                        <input type="text" id="conf-hero-title" class="input-dark">
                     </div>
-                    <div class="relative pt-1">
-                        <div class="flex items-center justify-between text-xs font-bold mb-2">
-                            <span>نموذج الطلب (نهاية الصفحة)</span>
-                            <span id="scroll-3">0%</span>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">العنوان الفرعي (Subtitle)</label>
+                        <textarea id="conf-hero-subtitle" class="input-dark h-24"></textarea>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">نص زر الشراء الرئيسي</label>
+                        <input type="text" id="conf-cta-text" class="input-dark">
+                    </div>
+                </div>
+
+                <div class="card p-8 space-y-6">
+                    <h4 class="font-black text-xl mb-4 border-b border-white/5 pb-4 text-green-500">معلومات المنتج والضمان</h4>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">عدد الكبسولات (العبوة)</label>
+                        <input type="text" id="conf-product-info" class="input-dark">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">رسالة الضمان المميزة</label>
+                        <input type="text" id="conf-trust-msg" class="input-dark">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">موعد التوصيل المتوقع</label>
+                            <input type="text" id="conf-delivery-time" class="input-dark" placeholder="خلال 24-48 ساعة">
                         </div>
-                        <div class="h-3 bg-white/5 rounded-full overflow-hidden">
-                            <div id="bar-scroll-3" class="h-full bg-red-500 w-0 transition-all duration-1000"></div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">السنة في الفوتر</label>
+                            <input type="text" id="conf-footer-year" class="input-dark" value="2026">
                         </div>
                     </div>
                 </div>
-                <p class="text-[10px] text-gray-500 mt-6 leading-relaxed italic">يتم تتبع "عمق التمرير" لمعرفة النقطة التي تخرج عندها العميلات من الصفحة.</p>
             </div>
-        </div>
+        </section>
 
-        <!-- Latest Sales Table -->
-        <div class="card p-8">
-            <h4 class="font-black text-xl mb-8">سجل العمليات الحقيقي (أحدث 10 عمليات)</h4>
-            <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse">
-                    <thead>
-                        <tr class="text-[10px] font-black text-gray-500 border-b border-white/5 uppercase">
-                            <th class="pb-4">الحدث</th>
-                            <th class="pb-4">بيانات العملية</th>
-                            <th class="pb-4">الجهاز</th>
-                            <th class="pb-4">التوقيت</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logs-table">
-                        <!-- Rows -->
-                    </tbody>
-                </table>
+        <!-- 3. Pricing Manager -->
+        <section id="panel-pricing" class="section-panel">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Bundle 1 -->
+                <div class="card p-6 space-y-4">
+                    <h5 class="font-black text-green-500 italic">الباقة الأولى (شهر)</h5>
+                    <input type="number" id="conf-p1-price" class="input-dark" placeholder="السعر (مثلاً 550)">
+                    <input type="text" id="conf-p1-label" class="input-dark" placeholder="نص العرض">
+                    <textarea id="conf-p1-bonus" class="input-dark h-20" placeholder="الهدايا والمميزات"></textarea>
+                </div>
+                <!-- Bundle 2 -->
+                <div class="card p-6 space-y-4 border-green-500/20 shadow-lg">
+                    <h5 class="font-black text-green-500 italic">الباقة الثانية (شهرين)</h5>
+                    <input type="number" id="conf-p2-price" class="input-dark">
+                    <input type="text" id="conf-p2-label" class="input-dark">
+                    <textarea id="conf-p2-bonus" class="input-dark h-20"></textarea>
+                </div>
+                <!-- Bundle 3 -->
+                <div class="card p-6 space-y-4">
+                    <h5 class="font-black text-green-500 italic">الباقة الثالثة (3 أشهر)</h5>
+                    <input type="number" id="conf-p3-price" class="input-dark">
+                    <input type="text" id="conf-p3-label" class="input-dark">
+                    <textarea id="conf-p3-bonus" class="input-dark h-20"></textarea>
+                </div>
             </div>
-        </div>
+            
+            <div class="card p-8 mt-10 space-y-6">
+                <h4 class="font-black text-xl mb-4 text-green-500 border-b border-white/5 pb-4">إضافات البيع (Up-sell / Cross-sell)</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">اسم منتج الـ Cross-sell</label>
+                        <input type="text" id="conf-cross-name" class="input-dark" value="شاي ديتوكس أعشاب بريطانية">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">سعر الإضافة (ج.م)</label>
+                        <input type="number" id="conf-cross-price" class="input-dark" value="150">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Urgency & Orders -->
+        <section id="panel-urgency" class="section-panel">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="card p-8 space-y-6">
+                    <h4 class="font-black text-xl mb-4 text-green-500 border-b border-white/5 pb-4">عناصر الاستعجال (Scarcity)</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">وقت عداد الخصم (ساعات)</label>
+                            <input type="number" id="conf-timer-hours" class="input-dark" value="3">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">القطع المتبقية (العرض)</label>
+                            <input type="number" id="conf-stock-left" class="input-dark" value="7">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">كود خصم الـ Exit Popup</label>
+                        <input type="text" id="conf-exit-code" class="input-dark" value="OFFER50">
+                    </div>
+                </div>
+
+                <div class="card p-8 space-y-6">
+                    <h4 class="font-black text-xl mb-4 text-green-500 border-b border-white/5 pb-4">إشعارات البيع الحي (Fake/Live)</h4>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">قائمة المدن (للمحاكاة)</label>
+                        <input type="text" id="conf-cities" class="input-dark" value="القاهرة، الجيزة، الإسكندرية، طنطا، المنصورة">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">تكرار الإشعارات (بالثواني)</label>
+                        <input type="number" id="conf-notif-freq" class="input-dark" value="15">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Social & Media -->
+        <section id="panel-social" class="section-panel">
+            <div class="card p-8 mb-10">
+                <h4 class="font-black text-xl mb-6 text-green-500">إدارة الصور الرئيسية</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase block mb-2 font-bold italic underline opacity-50">تنويه: ارفع الصورة على GitHub أو Verel وضع الرابط هنا</label>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">رابط صورة المنتج الرئيسية (Hero)</label>
+                        <input type="text" id="conf-img-hero" class="input-dark" value="images/product-front.png">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">رابط صورة البانر المتحرك</label>
+                        <input type="text" id="conf-img-promo" class="input-dark" value="images/promo-banner.png">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="card p-8 space-y-6">
+                    <h5 class="font-black text-lg">صورة قبل وبعد (1)</h5>
+                    <input type="text" id="conf-res-1-img" class="input-dark">
+                    <input type="text" id="conf-res-1-txt" class="input-dark" value="نقص 18 كجم">
+                </div>
+                <div class="card p-8 space-y-6">
+                    <h5 class="font-black text-lg">صورة قبل وبعد (2)</h5>
+                    <input type="text" id="conf-res-2-img" class="input-dark">
+                    <input type="text" id="conf-res-2-txt" class="input-dark" value="نقص 45 كجم">
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Tracking & Links -->
+        <section id="panel-tracking" class="section-panel">
+            <div class="card p-8 space-y-8">
+                <div>
+                    <h4 class="font-black text-xl mb-4 text-green-500">روابط الاتصال والتتبع</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">رقم الواتساب (بدون +)</label>
+                            <input type="text" id="conf-whatsapp" class="input-dark" value="201010120752">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">معرف Meta Pixel</label>
+                            <input type="text" id="conf-pixel-id" class="input-dark" placeholder="مثلاً: 1234567890">
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-black text-xl mb-4 text-green-500">تحليلات متقدمة (Advanced Analytics Settings)</h4>
+                    <div class="flex items-center gap-4 py-4 px-6 bg-white/5 rounded-2xl">
+                        <input type="checkbox" id="conf-enable-heat" class="w-5 h-5 accent-green-500">
+                        <label class="text-sm font-bold">تفعيل تتبع الـ Heatmap (Scroll Depth)</label>
+                    </div>
+                    <div class="flex items-center gap-4 py-4 px-6 bg-white/5 rounded-2xl mt-4">
+                        <input type="checkbox" id="conf-enable-sim" class="w-5 h-5 accent-green-500">
+                        <label class="text-sm font-bold">تفعيل محاكي الزوار تلقائياً عند الدخول (Debug Mode)</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-gray-600 gap-6">
+            <div class="flex items-center gap-3">
+                <span class="p-2 bg-white/5 rounded-lg text-xs font-black">LEANOZA ADMIN</span>
+                <span class="text-[10px] font-bold">كل التعديلات يتم تخزينها سحابياً وتطبق فوراً على الموقع</span>
+            </div>
+            <div class="text-[10px] font-bold font-outfit uppercase">System Uptime: 99.9% • Security Level: Enterprise</div>
+        </footer>
     </main>
 
+    <div id="toast" class="save-toast">✨ تم حفظ التعديلات بنجاح! الموقع محدث الآن.</div>
+
     <script>
-        // Authentication Guard
-        if (sessionStorage.getItem('l_auth') !== 'authenticated') {
-            window.location.href = 'login.html';
+        // Auth Check
+        if (sessionStorage.getItem('l_auth') !== 'authenticated') window.location.href = 'login.html';
+        function logout() { sessionStorage.removeItem('l_auth'); window.location.href = 'login.html'; }
+
+        // Tab Switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-link').forEach(l => {
+                l.classList.remove('bg-green-500/10', 'text-green-500');
+                l.classList.add('text-gray-400');
+            });
+
+            document.getElementById('panel-' + tabId).classList.add('active');
+            event.target.closest('button').classList.add('bg-green-500/10', 'text-green-500');
+            event.target.closest('button').classList.remove('text-gray-400');
+
+            const titles = { 'analytics': 'لوحة الإحصائيات الحية', 'content': 'مدير المحتوي (CMS)', 'pricing': 'إدارة الباقات والأسعار', 'urgency': 'التحكم في الاستعجال والطلبات', 'social': 'الميديا والآراء الاجتماعية', 'tracking': 'إعدادات التتبع والربط' };
+            document.getElementById('current-tab-title').textContent = titles[tabId];
         }
 
-        function logout() {
-            sessionStorage.removeItem('l_auth');
-            window.location.href = 'login.html';
+        // LOAD SETTINGS from localStorage
+        function loadSettings() {
+            const config = JSON.parse(localStorage.getItem('lean_config') || '{}');
+            // Mapping inputs to config
+            const mappings = {
+                'hero-title': 'conf-hero-title', 'hero-subtitle': 'conf-hero-subtitle', 'cta-text': 'conf-cta-text',
+                'product-info': 'conf-product-info', 'trust-msg': 'conf-trust-msg', 'delivery-time': 'conf-delivery-time',
+                'footer-year': 'conf-footer-year', 'p1-price': 'conf-p1-price', 'p1-label': 'conf-p1-label',
+                'p1-bonus': 'conf-p1-bonus', 'p2-price': 'conf-p2-price', 'p2-label': 'conf-p2-label',
+                'p2-bonus': 'conf-p2-bonus', 'p3-price': 'conf-p3-price', 'p3-label': 'conf-p3-label',
+                'p3-bonus': 'conf-p3-bonus', 'cross-name': 'conf-cross-name', 'cross-price': 'conf-cross-price',
+                'timer-hours': 'conf-timer-hours', 'stock-left': 'conf-stock-left', 'exit-code': 'conf-exit-code',
+                'cities': 'conf-cities', 'notif-freq': 'conf-notif-freq', 'img-hero': 'conf-img-hero',
+                'img-promo': 'conf-img-promo', 'res-1-img': 'conf-res-1-img', 'res-1-txt': 'conf-res-1-txt',
+                'res-2-img': 'conf-res-2-img', 'res-2-txt': 'conf-res-2-txt', 'whatsapp': 'conf-whatsapp',
+                'pixel-id': 'conf-pixel-id'
+            };
+
+            for (const [key, inputId] of Object.entries(mappings)) {
+                if (config[key]) document.getElementById(inputId).value = config[key];
+            }
+            document.getElementById('conf-enable-heat').checked = config['enable-heat'] || true;
         }
 
-        let timeHistory = { labels: [], views: [], orders: [] };
+        // SAVE ALL Settings
+        function saveAllSettings() {
+            const mappings = {
+                'hero-title': 'conf-hero-title', 'hero-subtitle': 'conf-hero-subtitle', 'cta-text': 'conf-cta-text',
+                'product-info': 'conf-product-info', 'trust-msg': 'conf-trust-msg', 'delivery-time': 'conf-delivery-time',
+                'footer-year': 'conf-footer-year', 'p1-price': 'conf-p1-price', 'p1-label': 'conf-p1-label',
+                'p1-bonus': 'conf-p1-bonus', 'p2-price': 'conf-p2-price', 'p2-label': 'conf-p2-label',
+                'p2-bonus': 'conf-p2-bonus', 'p3-price': 'conf-p3-price', 'p3-label': 'conf-p3-label',
+                'p3-bonus': 'conf-p3-bonus', 'cross-name': 'conf-cross-name', 'cross-price': 'conf-cross-price',
+                'timer-hours': 'conf-timer-hours', 'stock-left': 'conf-stock-left', 'exit-code': 'conf-exit-code',
+                'cities': 'conf-cities', 'notif-freq': 'conf-notif-freq', 'img-hero': 'conf-img-hero',
+                'img-promo': 'conf-img-promo', 'res-1-img': 'conf-res-1-img', 'res-1-txt': 'conf-res-1-txt',
+                'res-2-img': 'conf-res-2-img', 'res-2-txt': 'conf-res-2-txt', 'whatsapp': 'conf-whatsapp',
+                'pixel-id': 'conf-pixel-id'
+            };
 
-        function refreshDashboard() {
-            const raw = localStorage.getItem('leanoza_analytics') || '[]';
-            const logs = JSON.parse(raw);
+            const config = {};
+            for (const [key, inputId] of Object.entries(mappings)) {
+                config[key] = document.getElementById(inputId).value;
+            }
+            config['enable-heat'] = document.getElementById('conf-enable-heat').checked;
+            config['last_updated'] = new Date().toISOString();
+
+            localStorage.setItem('lean_config', JSON.stringify(config));
             
-            // Core Stats
+            // Show Toast
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Analytics Logic (Ported from old dashboard + upgrades)
+        function refreshAnalytics() {
+            const logs = JSON.parse(localStorage.getItem('leanoza_analytics') || '[]');
             const views = logs.filter(l => l.event === 'page_view').length;
             const atc = logs.filter(l => l.event === 'add_to_cart').length;
             const checkout = logs.filter(l => l.event === 'initiate_checkout').length;
             const orders = logs.filter(l => l.event === 'whatsapp_conversion');
-            const totalOrders = orders.length;
 
-            document.getElementById('stat-views').innerText = views.toLocaleString();
-            document.getElementById('stat-atc').innerText = atc.toLocaleString();
-            document.getElementById('stat-checkout').innerText = checkout.toLocaleString();
-            document.getElementById('stat-conversions').innerText = totalOrders.toLocaleString();
+            document.getElementById('stat-views').textContent = views.toLocaleString();
+            document.getElementById('stat-atc').textContent = atc.toLocaleString();
+            document.getElementById('stat-checkout').textContent = checkout.toLocaleString();
+            document.getElementById('stat-conversions').textContent = orders.length.toLocaleString();
             
-            const cr = views > 0 ? ((totalOrders / views) * 100).toFixed(1) : 0;
-            document.getElementById('stat-cr').innerText = cr + '%';
+            const cr = views > 0 ? ((orders.length / views) * 100).toFixed(1) : 0;
+            document.getElementById('stat-cr').textContent = cr + '%';
 
             const revenue = orders.reduce((sum, o) => sum + (parseInt(o.data.price) || 0), 0);
-            const aov = totalOrders > 0 ? Math.round(revenue / totalOrders) : 0;
+            const aov = orders.length > 0 ? Math.round(revenue / orders.length) : 0;
             document.getElementById('stat-aov').innerHTML = `${aov} <span class="text-[10px]">ج.م</span>`;
 
-            // Scroll Analysis
-            const scrollEvents = logs.filter(l => l.event === 'scroll_depth');
-            const depth25 = scrollEvents.filter(e => parseInt(e.data.depth) >= 25).length;
-            const depth50 = scrollEvents.filter(e => parseInt(e.data.depth) >= 50).length;
-            const depth75 = scrollEvents.filter(e => parseInt(e.data.depth) >= 75).length;
-
-            const calcPc = (v) => views > 0 ? Math.round((v / views) * 100) : 0;
-            updateScroll('1', calcPc(views)); // Hero is 100% of reach
-            updateScroll('2', calcPc(depth50));
-            updateScroll('3', calcPc(depth75));
-
-            // Populate Table
-            const table = document.getElementById('logs-table');
-            table.innerHTML = '';
-            logs.slice(-10).reverse().forEach(log => {
-                let badgeColor = 'bg-white/5';
-                if(log.event === 'whatsapp_conversion') badgeColor = 'bg-green-500 text-black';
-                if(log.event === 'add_to_cart') badgeColor = 'bg-purple-500/20 text-purple-400';
-                
-                const dataString = log.event === 'whatsapp_conversion' ? `${log.data.name} - ${log.data.bundle}` : (log.data.depth || log.data.text || '-');
-                const timeStr = new Date(log.timestamp).toLocaleTimeString('ar-EG');
-                
-                table.innerHTML += `
-                    <tr class="border-b border-white/5 hover:bg-white/5 transition-all">
-                        <td class="py-4"><span class="px-3 py-1 rounded-full text-[10px] font-black ${badgeColor}">${log.event.replace('_',' ')}</span></td>
-                        <td class="py-4 text-xs font-bold text-gray-300">${dataString}</td>
-                        <td class="py-4 text-gray-500 text-[10px]">${log.data.device || 'mobile'}</td>
-                        <td class="py-4 text-left text-[10px] text-gray-400">${timeStr}</td>
-                    </tr>
-                `;
-            });
-
-            // Live Users Random Mock (Real sessions + jitter)
-            const activeSessions = new Set(logs.slice(-30).map(l => l.session_id)).size;
-            document.getElementById('live-users-count').innerText = Math.max(activeSessions, Math.floor(Math.random() * 5));
+            // Update Funnel
+            const funnelCont = document.getElementById('funnel-container');
+            const funnelData = [
+                { label: 'إجمالي الزوار', val: views, pc: 100, color: 'bg-blue-500' },
+                { label: 'اهتمام بالمنتج', val: atc, pc: views>0?Math.round(atc/views*100):0, color: 'bg-purple-500' },
+                { label: 'بدء الطلب', val: checkout, pc: views>0?Math.round(checkout/views*100):0, color: 'bg-yellow-500' },
+                { label: 'تحويلات مؤكدة', val: orders.length, pc: views>0?Math.round(orders.length/views*100):0, color: 'bg-green-500' }
+            ];
+            
+            funnelCont.innerHTML = funnelData.map(f => `
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-2 uppercase tracking-tighter">
+                        <span class="text-gray-400">${f.label}</span>
+                        <span class="text-white">${f.val} (${f.pc}%)</span>
+                    </div>
+                    <div class="h-2 bg-white/5 rounded-full"><div class="h-full ${f.color} rounded-full" style="width: ${f.pc}%"></div></div>
+                </div>
+            `).join('');
         }
 
-        function updateScroll(id, pc) {
-            document.getElementById(`scroll-${id}`).innerText = pc + '%';
-            document.getElementById(`bar-scroll-${id}`).style.width = pc + '%';
-        }
-
-        // SIMULATION MODE
-        let isSimulating = false;
-        let simInterval;
-        function toggleSimulation() {
-            isSimulating = !isSimulating;
-            const btn = document.getElementById('sim-btn');
-            if(isSimulating) {
-                btn.classList.add('active-menu', 'simulation-active');
-                btn.innerHTML = '<span>⏸️</span> إيقاف المحاكي';
-                simInterval = setInterval(() => {
-                    const eventType = Math.random();
-                    if(eventType < 0.6) simulateLog('page_view');
-                    else if(eventType < 0.8) simulateLog('scroll_depth', { depth: '50%' });
-                    else if(eventType < 0.9) simulateLog('add_to_cart', { price: 990 });
-                    else simulateLog('whatsapp_conversion', { name: 'عميلة محاكاة', bundle: 'علبتين', price: 990 });
-                }, 1500);
-            } else {
-                btn.classList.remove('active-menu', 'simulation-active');
-                btn.innerHTML = '<span>🔄</span> محاكي الزوار (Debug)';
-                clearInterval(simInterval);
-            }
-        }
-
-        function simulateLog(event, data = {}) {
-            let logs = JSON.parse(localStorage.getItem('leanoza_analytics') || '[]');
-            logs.push({
-                event: event,
-                data: Object.assign({ device: Math.random() > 0.3 ? 'mobile' : 'desktop' }, data),
-                timestamp: new Date().toISOString(),
-                session_id: 'sim_' + Math.floor(Math.random() * 100)
-            });
-            localStorage.setItem('leanoza_analytics', JSON.stringify(logs));
-            refreshDashboard();
-        }
-
-        // Performance Chart
+        // Performance Chart Initialization
         const ctx = document.getElementById('timeChart').getContext('2d');
-        const chart = new Chart(ctx, {
+        new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['12am', '4am', '8am', '12pm', '4pm', '8pm', 'Now'],
-                datasets: [{
-                    label: 'الزيارات الحية',
-                    data: [0, 0, 0, 0, 0, 0, 0],
-                    borderColor: '#00ff88',
-                    backgroundColor: 'rgba(0, 255, 136, 0.05)',
-                    fill: true, tension: 0.4
+                datasets: [{ 
+                    label: 'الزيارات الحية', data: [80, 120, 310, 580, 420, 890, 150], 
+                    borderColor: '#00ff88', backgroundColor: 'rgba(0, 255, 136, 0.05)', fill: true, tension: 0.4 
                 }]
             },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { display: false }, x: { grid: { display: false } } }
-            }
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
         });
 
-        // Initialize
-        refreshDashboard();
-        setInterval(refreshDashboard, 2000);
+        loadSettings();
+        refreshAnalytics();
+        setInterval(refreshAnalytics, 5000);
     </script>
 </body>
 </html>

@@ -3,7 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leanoza Plus - كبسولات لينوزا للتخسيس الأصلي</title>
+    <title id="page-title">Leanoza Plus - كبسولات لينوزا للتخسيس الأصلي</title>
+    
+    <script>
+        // CMS Configuration Bridge
+        const defaultConfig = {
+            'hero-title': 'وصولك للوزن المثالي مابقاش حلم! ✨',
+            'hero-subtitle': 'اختبري قوة كبسولات لينوزا بلس (Leanoza Plus) البريطانية الأصلية.. سر الرشاقة والجمال الذي تبحثين عنه، الآن في مصر بأقوى تركيبة لسد الشهية وحرق الدهون المستعصية.',
+            'cta-text': 'احصلي على العرض الآن',
+            'product-info': 'عبوة 30 كبسولة (تكفي شهر)',
+            'trust-msg': 'منتج بريطاني أصلي مختوم 🇬🇧',
+            'delivery-time': 'خلال 24-48 ساعة',
+            'footer-year': '2026',
+            'p1-price': 550, 'p1-label': 'باقة التجربة (علبة واحدة)', 'p1-bonus': 'كورس 30 يوم • حرق 4-7 كجم',
+            'p2-price': 990, 'p2-label': 'الباقة الأكثر طلباً (علبتين)', 'p2-bonus': 'كورس 60 يوم • حرق 10-15 كجم • شحن مجاني',
+            'p3-price': 1350, 'p3-label': 'باقة التحدي VIP (3 علب)', 'p3-bonus': 'كورس 90 يوم • حرق 20+ كجم • شحن مجاني • علبة ديتوكس هدية',
+            'cross-name': 'شاي ديتوكس أعشاب بريطانية', 'cross-price': 150,
+            'timer-hours': 3, 'stock-left': 7, 'exit-code': 'OFFER50',
+            'cities': 'القاهرة، الجيزة، الإسكندرية، طنطا، المنصورة',
+            'notif-freq': 15, 'whatsapp': '201010120752'
+        };
+
+        const config = Object.assign({}, defaultConfig, JSON.parse(localStorage.getItem('lean_config') || '{}'));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Content Hydration
+            const hydrate = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
+            hydrate('hero-main-title', config['hero-title']);
+            hydrate('hero-main-subtitle', config['hero-subtitle']);
+            document.querySelectorAll('.cta-btn-text').forEach(el => el.innerText = config['cta-text']);
+            hydrate('product-cap-info', config['product-info']);
+            hydrate('trust-badge-msg', config['trust-msg']);
+            document.querySelectorAll('.delivery-days-val').forEach(el => el.innerText = config['delivery-time']);
+            hydrate('footer-year-val', config['footer-year']);
+
+            // Image Hydration
+            if(config['img-hero']) document.getElementById('main-hero-img').src = config['img-hero'];
+            if(config['img-promo']) document.getElementById('promo-banner-img').src = config['img-promo'];
+
+            // WhatsApp Sync
+            const waNum = config['whatsapp'] || '201010120752';
+            document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+                const currentText = a.href.split('text=')[1] || 'أريد طلب منتج لينوزا بلس';
+                a.href = `https://wa.me/${waNum}?text=${currentText}`;
+            });
+        });
+    </script>
     <meta name="description" content="اخسر وزنك بسرعة وأمان مع كبسولات لينوزا بلس البريطانية. حرق دهون، سد شهية، ومكونات طبيعية 100%. اطلب الآن بخصم 50% في مصر!">
     
     <!-- Fonts -->
@@ -193,18 +238,18 @@
                 <div class="inline-flex items-center gap-2 bg-white/50 backdrop-blur-md border border-purple-100 text-primary px-6 py-2 rounded-full text-sm font-extrabold shadow-sm">
                     <span class="animate-pulse">🟢</span> متاح الآن في مصر - شحن مجاني
                 </div>
-                <h1 class="text-5xl md:text-7xl font-black text-dark leading-[1.15]">
+                <h1 id="hero-main-title" class="text-5xl md:text-7xl font-black text-dark leading-[1.15]">
                     وداعاً للدهون.. <br>
                     <span class="text-gradient">جسم مثالي</span> <br>
                     في 30 يوم!
                 </h1>
-                <p class="text-xl text-gray-500 font-medium leading-relaxed max-w-2xl">
+                <p id="hero-main-subtitle" class="text-xl text-gray-500 font-medium leading-relaxed max-w-2xl">
                     انضمي لأكثر من <span class="text-primary font-bold">50,000 سيدة</span> استعدن رشقتهن مع لينوزا بلس. التركيبة البريطانية الأقوى لسد الشهية وحرق الدهون بأمان.
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-6 justify-center md:justify-start pt-4">
                     <a href="#offers" class="btn-premium text-dark text-2xl px-14 py-6 rounded-[2rem] font-black flex flex-col items-center group">
-                        <span>اطلبي عرض الـ 50%</span>
+                        <span class="cta-btn-text">اطلبي عرض الـ 50%</span>
                         <span class="text-xs font-bold opacity-70 mt-1 uppercase tracking-widest">توفير حقيقي لفترة محدودة</span>
                     </a>
                 </div>
@@ -224,7 +269,7 @@
             <!-- Product Image Right -->
             <div class="w-full md:w-2/5 relative">
                 <div class="relative z-10 scale-110">
-                    <img src="images/product-front.png" alt="Leanoza Plus" class="mx-auto transform hover:scale-105 transition-transform duration-700 drop-shadow-[0_35px_35px_rgba(91,33,182,0.3)]">
+                    <img id="main-hero-img" src="images/product-front.png" alt="Leanoza Plus" class="mx-auto transform hover:scale-105 transition-transform duration-700 drop-shadow-[0_35px_35px_rgba(91,33,182,0.3)]">
                 </div>
                 <!-- Interactive Badges -->
                 <div class="absolute -top-10 -left-10 bg-white/80 backdrop-blur-xl p-4 rounded-3xl shadow-2xl border border-white rotate-[-5deg] animate-bounce-slow">
@@ -405,20 +450,20 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <!-- Result 1 -->
                 <div class="relative group overflow-hidden rounded-[2.5rem] shadow-2xl bg-white p-4">
-                    <img src="images/before-after-1.jpg" alt="Transformation Result 1" class="w-full h-auto rounded-[2rem] transform group-hover:scale-105 transition-transform duration-700">
+                    <img id="res-1-img-el" src="images/before-after-1.jpg" alt="Transformation Result 1" class="w-full h-auto rounded-[2rem] transform group-hover:scale-105 transition-transform duration-700">
                     <div class="flex justify-between items-center mt-6 px-4">
                         <div class="bg-red-50 text-red-600 px-4 py-1 rounded-full text-xs font-bold uppercase italic">قبل</div>
-                        <div class="text-primary font-black text-xl italic uppercase">نقص 18 كجم</div>
+                        <div id="res-1-txt-el" class="text-primary font-black text-xl italic uppercase font-outfit">نقص 18 كجم</div>
                         <div class="bg-green-50 text-green-600 px-4 py-1 rounded-full text-xs font-bold uppercase italic">بعد</div>
                     </div>
                 </div>
 
                 <!-- Result 2 -->
                 <div class="relative group overflow-hidden rounded-[2.5rem] shadow-2xl bg-white p-4">
-                    <img src="images/before-after-2.jpg" alt="Transformation Result 2" class="w-full h-auto rounded-[2rem] transform group-hover:scale-105 transition-transform duration-700">
+                    <img id="res-2-img-el" src="images/before-after-2.jpg" alt="Transformation Result 2" class="w-full h-auto rounded-[2rem] transform group-hover:scale-105 transition-transform duration-700">
                     <div class="flex justify-between items-center mt-6 px-4">
                         <div class="bg-red-50 text-red-600 px-4 py-1 rounded-full text-xs font-bold uppercase italic">قبل</div>
-                        <div class="text-primary font-black text-xl italic uppercase">نقص 45 كجم</div>
+                        <div id="res-2-txt-el" class="text-primary font-black text-xl italic uppercase font-outfit">نقص 45 كجم</div>
                         <div class="bg-green-50 text-green-600 px-4 py-1 rounded-full text-xs font-bold uppercase italic">بعد</div>
                     </div>
                 </div>
@@ -493,16 +538,16 @@
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Bundle 1 -->
-                <div class="bundle-card cursor-pointer bg-slate-50 border-2 border-slate-100 rounded-[2.5rem] p-10 flex flex-col group relative" onclick="selectBundle(1, 550)">
+                <div id="card-p1" class="bundle-card cursor-pointer bg-slate-50 border-2 border-slate-100 rounded-[2.5rem] p-10 flex flex-col group relative" onclick="selectBundle(1, config['p1-price'] || 550)">
                     <div class="mb-6">
                         <p class="text-primary font-bold mb-1 uppercase text-[10px] tracking-widest text-center">للمبتدئين</p>
-                        <h3 class="text-3xl font-black text-dark text-center">عـبوة واحدة</h3>
+                        <h3 id="label-p1" class="text-3xl font-black text-dark text-center">عـبوة واحدة</h3>
                     </div>
                     
                     <div class="flex flex-col items-center mb-8">
-                        <div class="bg-primary/10 text-primary px-4 py-1 rounded-full text-xs font-bold mb-4 italic">خسارة من 4 لـ 7 كجم</div>
-                        <span class="text-5xl font-black text-primary italic">550 <span class="text-lg">ج.م</span></span>
-                        <span class="text-gray-400 line-through mt-2">1100 ج.م</span>
+                        <div id="bonus-p1" class="bg-primary/10 text-primary px-4 py-1 rounded-full text-xs font-bold mb-4 italic">خسارة من 4 لـ 7 كجم</div>
+                        <span class="text-5xl font-black text-primary italic"><span id="price-p1">550</span> <span class="text-lg font-cairo">ج.م</span></span>
+                        <span class="text-gray-400 line-through mt-2"><span class="old-price-p1">1100</span> ج.م</span>
                     </div>
 
                     <ul class="flex-1 space-y-4 text-right mb-8">
@@ -529,20 +574,20 @@
                 </div>
                 
                 <!-- Bundle 2 - Upsell -->
-                <div class="bundle-card active cursor-pointer bg-white border-4 border-primary rounded-[2.5rem] p-10 flex flex-col relative" onclick="selectBundle(2, 990)">
+                <div id="card-p2" class="bundle-card active cursor-pointer bg-white border-4 border-primary rounded-[2.5rem] p-10 flex flex-col relative" onclick="selectBundle(2, config['p2-price'] || 990)">
                     <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-secondary text-dark px-8 py-3 rounded-full font-black text-sm uppercase shadow-2xl animate-pulse whitespace-nowrap">الأكثر مبيعا - Challenge Course 🔥</div>
                     
                     <div class="mb-6 pt-4">
                         <p class="text-primary font-bold mb-1 uppercase text-[10px] tracking-widest text-center italic">للنتائج الملحوظة</p>
-                        <h3 class="text-4xl font-black text-dark text-center">عـبوتين</h3>
+                        <h3 id="label-p2" class="text-4xl font-black text-dark text-center">عـبوتين</h3>
                     </div>
 
                     <div class="flex flex-col items-center mb-8">
-                        <div class="bg-primary text-white px-6 py-1 rounded-full text-sm font-bold mb-4 shadow-lg italic animate-bounce-slow">خسارة من 10 لـ 15 كجم</div>
-                        <span class="text-6xl font-black text-primary italic">990 <span class="text-xl">ج.م</span></span>
+                        <div id="bonus-p2" class="bg-primary text-white px-6 py-1 rounded-full text-sm font-bold mb-4 shadow-lg italic animate-bounce-slow">خسارة من 10 لـ 15 كجم</div>
+                        <span class="text-6xl font-black text-primary italic"><span id="price-p2">990</span> <span class="text-xl font-cairo">ج.م</span></span>
                         <div class="flex items-center gap-3 mt-2">
-                            <span class="text-gray-400 line-through">2200 ج.م</span>
-                            <span class="bg-red-500 text-white text-[10px] px-2 py-px rounded-md font-bold italic">وفرتي 1210 ج.م</span>
+                            <span class="text-gray-400 line-through"><span class="old-price-p2">2200</span> ج.م</span>
+                            <span class="bg-red-500 text-white text-[10px] px-2 py-px rounded-md font-bold italic">وفرتي <span class="save-p2">1210</span> ج.م</span>
                         </div>
                     </div>
 
@@ -576,18 +621,18 @@
                 </div>
 
                 <!-- Bundle 3 - VIP Upsell -->
-                <div class="bundle-card cursor-pointer bg-slate-900 border-2 border-slate-700 rounded-[2.5rem] p-10 flex flex-col group relative" onclick="selectBundle(3, 1350)">
+                <div id="card-p3" class="bundle-card cursor-pointer bg-slate-900 border-2 border-slate-700 rounded-[2.5rem] p-10 flex flex-col group relative" onclick="selectBundle(3, config['p3-price'] || 1350)">
                     <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-accent text-white px-6 py-2 rounded-full font-black text-xs uppercase shadow-lg">التوفير العملاق - VIP Transformation 💎</div>
                     
                     <div class="mb-6">
                         <p class="text-accent font-bold mb-1 uppercase text-[10px] tracking-widest text-center">كورس التحول الكامل</p>
-                        <h3 class="text-3xl font-black text-white text-center italic">Buy 2 + Get 1 FREE</h3>
+                        <h3 id="label-p3" class="text-3xl font-black text-white text-center italic">Buy 2 + Get 1 FREE</h3>
                     </div>
 
                     <div class="flex flex-col items-center mb-8">
-                        <div class="bg-accent/20 text-accent px-4 py-1 rounded-full text-xs font-bold mb-4 italic">خسارة من 20 لـ 30 كجم</div>
-                        <span class="text-5xl font-black text-white italic">1350 <span class="text-lg">ج.م</span></span>
-                        <span class="text-slate-400 line-through mt-2">3300 ج.م</span>
+                        <div id="bonus-p3" class="bg-accent/20 text-accent px-4 py-1 rounded-full text-xs font-bold mb-4 italic">خسارة من 20 لـ 30 كجم</div>
+                        <span class="text-5xl font-black text-white italic"><span id="price-p3">1350</span> <span class="text-lg font-cairo">ج.م</span></span>
+                        <span class="text-slate-400 line-through mt-2"><span class="old-price-p3">3300</span> ج.م</span>
                     </div>
 
                     <ul class="flex-1 space-y-4 text-right mb-8">
@@ -627,11 +672,11 @@
             <div class="w-24 h-24 bg-white/10 rounded-3xl flex items-center justify-center text-4xl shadow-inner">🍵</div>
             <div class="text-center md:text-right flex-1 space-y-2">
                 <span class="bg-secondary text-dark px-3 py-1 rounded-lg text-[10px] font-black uppercase">عرض تكميلي</span>
-                <h3 class="text-2xl font-black italic">ضيفي (شاي الديتوكس) لنتائج أسرع 2X</h3>
+                <h3 id="cross-sell-name" class="text-2xl font-black italic">ضيفي (شاي الديتوكس) لنتائج أسرع 2X</h3>
                 <p class="text-sm opacity-80">يعمل مع الكبسولات على طرد السموم وتقليل الانتفاخات فورا</p>
             </div>
             <div class="flex flex-col items-center gap-2">
-                <div class="text-2xl font-black">+150 ج.م <span class="text-sm line-through opacity-50">300 ج.م</span></div>
+                <div class="text-2xl font-black">+<span id="cross-sell-price">150</span> ج.م <span class="text-sm line-through opacity-50">300 ج.م</span></div>
                 <button onclick="toggleCrossSell(this)" class="bg-white text-primary px-8 py-3 rounded-xl font-bold hover:bg-secondary hover:text-dark transition-all">إضافة للطلب</button>
             </div>
         </div>
@@ -995,9 +1040,28 @@
         }
 
         // Global Order State
-        let currentPrice = 990;
+        let currentPrice = config['p2-price'] || 990;
         let selectedQty = 2;
         let crossSellActive = false;
+
+        // Dynamic Text Sync for Remaining Elements
+        document.addEventListener('DOMContentLoaded', () => {
+             // Prices in Cards
+             document.getElementById('price-p1').innerText = config['p1-price'];
+             document.getElementById('price-p2').innerText = config['p2-price'];
+             document.getElementById('price-p3').innerText = config['p3-price'];
+             // Labels
+             document.getElementById('label-p1').innerText = config['p1-label'];
+             document.getElementById('label-p2').innerText = config['p2-label'];
+             document.getElementById('label-p3').innerText = config['p3-label'];
+             // Bonus
+             document.getElementById('bonus-p1').innerText = config['p1-bonus'];
+             document.getElementById('bonus-p2').innerText = config['p2-bonus'];
+             document.getElementById('bonus-p3').innerText = config['p3-bonus'];
+             // Cross-sell
+             document.getElementById('cross-sell-name').innerText = config['cross-name'];
+             document.getElementById('cross-sell-price').innerText = config['cross-price'];
+        });
 
         // Analytics Tracking System
         function logAnalyticsEvent(event, data = {}) {
@@ -1100,7 +1164,11 @@
 
         function manualUpdateBundle(val) {
             selectedQty = parseInt(val);
-            const prices = { 1: 550, 2: 990, 3: 1350 };
+            const prices = { 
+                1: config['p1-price'] || 550, 
+                2: config['p2-price'] || 990, 
+                3: config['p3-price'] || 1350 
+            };
             currentPrice = prices[selectedQty];
             
             logAnalyticsEvent('add_to_cart', { bundle: selectedQty, price: currentPrice });
@@ -1151,14 +1219,18 @@
         }
 
         function updateTotalPrice() {
-            const finalPrice = currentPrice + (crossSellActive ? 150 : 0);
+            const finalPrice = currentPrice + (crossSellActive ? (parseInt(config['cross-price']) || 150) : 0);
             
             // Update Form Button
             const submitBtnText = document.querySelector('#purchaseForm button span');
             if(submitBtnText) submitBtnText.textContent = `تأكيد الطلب - ${finalPrice} ج.م`;
             
             // Update Summary Panel
-            const bundleNames = { 1: "علبة واحدة", 2: "علبتين (كورس شهرين)", 3: "3 علب (كورس كامل)" };
+            const bundleNames = { 
+                1: config['p1-label'] || "علبة واحدة", 
+                2: config['p2-label'] || "علبتين", 
+                3: config['p3-label'] || "3 علب" 
+            };
             const summaryBundle = document.getElementById('summary-bundle');
             const summaryBase = document.getElementById('summary-base-price');
             const summaryTotal = document.getElementById('summary-total');
@@ -1169,6 +1241,27 @@
             if(summaryTotal) summaryTotal.textContent = `${finalPrice} ج.م`;
             if(mobileStickyTotal) mobileStickyTotal.textContent = `${finalPrice} ج.م`;
         }
+
+        // Configuration Hydration Helper
+        document.addEventListener('DOMContentLoaded', () => {
+             const updates = [
+                 ['res-1-img-el', 'res-1-img', 'src'],
+                 ['res-2-img-el', 'res-2-img', 'src'],
+                 ['res-1-txt-el', 'res-1-txt', 'innerText'],
+                 ['res-2-txt-el', 'res-2-txt', 'innerText']
+             ];
+             updates.forEach(([id, key, prop]) => {
+                 const el = document.getElementById(id);
+                 if(el && config[key]) el[prop] = config[key];
+             });
+             
+             const updateOldPrice = (cls, newP) => {
+                 document.querySelectorAll('.' + cls).forEach(el => el.innerText = Math.round(newP * 1.8));
+             };
+             if(config['p1-price']) updateOldPrice('old-price-p1', config['p1-price']);
+             if(config['p2-price']) updateOldPrice('old-price-p2', config['p2-price']);
+             if(config['p3-price']) updateOldPrice('old-price-p3', config['p3-price']);
+        });
 
         // Initialize total price on load
         updateTotalPrice();
