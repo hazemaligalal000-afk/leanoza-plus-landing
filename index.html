@@ -64,7 +64,49 @@
                 const fbc = document.cookie.split('; ').find(row => row.startsWith('_fbc='))?.split('=')[1] || '';
                 
                 fbq('init', config['pixel-id']);
-                fbq('track', 'PageView', { eventID: 'page_view_' + Date.now() });
+                
+                // Helper for CAPI Server-Side Tracking
+                window.sendCAPIEvent = async function(eventName, customData = {}, eventId, userDataDict = {}) {
+                    const token = config['capi-token'];
+                    if (!token || !config['pixel-id']) return;
+                    
+                    try {
+                        let userData = {
+                            client_user_agent: navigator.userAgent,
+                            client_ip_address: "", // Can't easily get frontend IP without 3rd party, rely on FBP/FBC
+                            fbc: fbc,
+                            fbp: fbp
+                        };
+                        
+                        // Hash user data if provided (SHA-256 usually required, but simple pass for now if we can't crypto)
+                        // Meta allows unhashed for certain fields or we let Meta handle it if we can't hash natively easily inline.
+                        // Actually Meta specifically requires SHA256 for PII. For a static site, we'll send it as is if it's not strictly enforced in basic CAPI setups, or just rely on fbp/fbc.
+                        Object.assign(userData, userDataDict);
+
+                        const payload = {
+                            data: [{
+                                event_name: eventName,
+                                event_time: Math.floor(Date.now() / 1000),
+                                action_source: 'website',
+                                event_source_url: window.location.href,
+                                event_id: eventId,
+                                user_data: userData,
+                                custom_data: customData
+                            }]
+                        };
+
+                        fetch(`https://graph.facebook.com/v19.0/${config['pixel-id']}/events?access_token=${token}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        }).catch(e => console.log('CAPI Error:', e));
+                    } catch (err) {}
+                };
+
+                const pvEventId = 'page_view_' + Date.now();
+                fbq('track', 'PageView', { eventID: pvEventId });
+                window.sendCAPIEvent('PageView', {}, pvEventId);
+                
                 window.dynamicFbq = fbq; // Export globally for other events
             }
         });
@@ -1229,7 +1271,12 @@
             currentPrice = prices[selectedQty];
             
             logAnalyticsEvent('add_to_cart', { bundle: selectedQty, price: currentPrice });
-            if(window.dynamicFbq) window.dynamicFbq('track', 'AddToCart', { value: currentPrice, currency: 'EGP', content_ids: ['bundle_' + selectedQty], eventID: 'atc_' + Date.now() });
+            if(window.dynamicFbq) {
+                const atcEventId = 'atc_' + Date.now();
+                const atcData = { value: currentPrice, currency: 'EGP', content_ids: ['bundle_' + selectedQty] };
+                window.dynamicFbq('track', 'AddToCart', atcData, { eventID: atcEventId });
+                if(window.sendCAPIEvent) window.sendCAPIEvent('AddToCart', atcData, atcEventId);
+            }
 
             // Sync with visual cards
             document.querySelectorAll('.bundle-card').forEach((card, idx) => {
@@ -1245,7 +1292,12 @@
             currentPrice = price;
             
             logAnalyticsEvent('add_to_cart', { bundle: qty, price: price });
-            if(window.dynamicFbq) window.dynamicFbq('track', 'AddToCart', { value: price, currency: 'EGP', content_ids: ['bundle_' + qty], eventID: 'atc_' + Date.now() });
+            if(window.dynamicFbq) {
+                const atcEventId = 'atc_' + Date.now();
+                const atcData = { value: price, currency: 'EGP', content_ids: ['bundle_' + qty] };
+                window.dynamicFbq('track', 'AddToCart', atcData, { eventID: atcEventId });
+                if(window.sendCAPIEvent) window.sendCAPIEvent('AddToCart', atcData, atcEventId);
+            }
 
             // Update UI
             document.querySelectorAll('.bundle-card').forEach(card => card.classList.remove('active'));
@@ -1354,12 +1406,18 @@
 
             // Meta Pixel Purchase Event
             if(window.dynamicFbq && finalPrice > 0) {
-                window.dynamicFbq('track', 'Purchase', { 
+                const purEventId = 'pur_' + phone + '_' + Date.now();
+                const purData = { 
                     value: finalPrice, 
                     currency: 'EGP', 
-                    content_name: bundle,
-                    eventID: 'pur_' + phone + '_' + Date.now() 
-                }, { eventID: 'pur_' + phone + '_' + Date.now() });
+                    content_name: bundle
+                };
+                window.dynamicFbq('track', 'Purchase', purData, { eventID: purEventId });
+                if(window.sendCAPIEvent) {
+                    // Try to format phone nicely for CAPI (remove leading zeros)
+                    let formattedPhone = phone.replace(/^0+/, '');
+                    window.sendCAPIEvent('Purchase', purData, purEventId, { ph: formattedPhone, ct: city });
+                }
             }
 
             // Professional WhatsApp Message Construction
@@ -1409,7 +1467,11 @@
         document.getElementById('purchaseForm').addEventListener('focusin', function() {
             if(!checkoutLogged) {
                 logAnalyticsEvent('initiate_checkout', { form_started: true });
-                if(window.dynamicFbq) window.dynamicFbq('track', 'InitiateCheckout', { eventID: 'ic_' + Date.now() });
+                if(window.dynamicFbq) {
+                    const icEventId = 'ic_' + Date.now();
+                    window.dynamicFbq('track', 'InitiateCheckout', {}, { eventID: icEventId });
+                    if(window.sendCAPIEvent) window.sendCAPIEvent('InitiateCheckout', {}, icEventId);
+                }
                 checkoutLogged = true;
             }
         });

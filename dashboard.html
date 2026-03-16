@@ -380,6 +380,10 @@
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">معرف Meta Pixel</label>
                             <input type="text" id="conf-pixel-id" class="input-dark" placeholder="مثلاً: 1234567890">
                         </div>
+                        <div class="md:col-span-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Meta CAPI Access Token (Server-Side)</label>
+                            <textarea id="conf-capi-token" class="input-dark h-24" placeholder="ضع رمز الوصول للكونفردجن API هنا (Access Token)"></textarea>
+                        </div>
                     </div>
                 </div>
                 
@@ -452,7 +456,7 @@
                 'cities': 'conf-cities', 'notif-freq': 'conf-notif-freq', 'img-hero': 'conf-img-hero',
                 'img-promo': 'conf-img-promo', 'res-1-img': 'conf-res-1-img', 'res-1-txt': 'conf-res-1-txt',
                 'res-2-img': 'conf-res-2-img', 'res-2-txt': 'conf-res-2-txt', 'whatsapp': 'conf-whatsapp',
-                'pixel-id': 'conf-pixel-id'
+                'pixel-id': 'conf-pixel-id', 'capi-token': 'conf-capi-token'
             };
 
             for (const [key, inputId] of Object.entries(mappings)) {
@@ -474,7 +478,7 @@
                 'cities': 'conf-cities', 'notif-freq': 'conf-notif-freq', 'img-hero': 'conf-img-hero',
                 'img-promo': 'conf-img-promo', 'res-1-img': 'conf-res-1-img', 'res-1-txt': 'conf-res-1-txt',
                 'res-2-img': 'conf-res-2-img', 'res-2-txt': 'conf-res-2-txt', 'whatsapp': 'conf-whatsapp',
-                'pixel-id': 'conf-pixel-id'
+                'pixel-id': 'conf-pixel-id', 'capi-token': 'conf-capi-token'
             };
 
             const config = {};
