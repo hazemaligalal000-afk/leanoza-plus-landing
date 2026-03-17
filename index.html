@@ -23,7 +23,8 @@
             'cities': 'القاهرة، الجيزة، الإسكندرية، طنطا، المنصورة',
             'notif-freq': 15, 'whatsapp': '201010120752',
             'pixel-id': '1695642841871624',
-            'capi-token': 'EAAib1p8XrGkBQZB2IztfV9eCOD0s6wLvDoGcfiTAQsjrlwVvBbADQrrM7x15IsNbXBZAhGdXGa3cS7SJGnyz7C2RiRelxaBy4yZA9g56McT8l4jQrmsqLhZBZAXZBE8ZBoLbD6WDVKdZAj5RkqFsgJXGGvGq1I1n5YP8MFpfMZCcznwRoYZAvZCmR8QlBAjfTXx9wZDZD'
+            'capi-token': 'EAAib1p8XrGkBQZB2IztfV9eCOD0s6wLvDoGcfiTAQsjrlwVvBbADQrrM7x15IsNbXBZAhGdXGa3cS7SJGnyz7C2RiRelxaBy4yZA9g56McT8l4jQrmsqLhZBZAXZBE8ZBoLbD6WDVKdZAj5RkqFsgJXGGvGq1I1n5YP8MFpfMZCcznwRoYZAvZCmR8QlBAjfTXx9wZDZD',
+            'sheet-url': 'https://script.google.com/macros/s/AKfycby5X1xYn0W-Z9fNn0m0uV1zX_X-X/exec' // REPLACE WITH REAL APPS SCRIPT URL
         };
 
         let config = Object.assign({}, defaultConfig, JSON.parse(localStorage.getItem('lean_config') || '{}'));
@@ -1480,6 +1481,23 @@
                 bundle, 
                 price: finalPrice 
             });
+
+            // Send to Google Sheets (NEW)
+            const sheetUrl = config['sheet-url'];
+            if(sheetUrl) {
+                const sheetData = new FormData();
+                sheetData.append('date', new Date().toLocaleString('ar-EG'));
+                sheetData.append('name', name);
+                sheetData.append('phone', phone);
+                sheetData.append('city', city);
+                sheetData.append('address', address);
+                sheetData.append('bundle', bundle);
+                sheetData.append('price', finalPrice);
+                sheetData.append('extra', extra);
+                
+                fetch(sheetUrl, { method: 'POST', body: sheetData, mode: 'no-cors' })
+                    .catch(e => console.log('Sheet Error:', e));
+            }
 
             // Meta Pixel Purchase Event
             if(window.dynamicFbq && finalPrice > 0) {
