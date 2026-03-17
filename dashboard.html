@@ -53,6 +53,10 @@
                     <span>🛍️</span> الطلبات
                     <span id="orders-badge" class="absolute left-6 top-1/2 -translate-y-1/2 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full hidden">0</span>
                 </button>
+                <button onclick="switchTab('lost')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all relative">
+                    <span>🏚️</span> الطلبات المفقودة
+                    <span id="lost-badge" class="absolute left-6 top-1/2 -translate-y-1/2 bg-amber-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full hidden">0</span>
+                </button>
                 <button onclick="switchTab('content')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>✍️</span> تعديل المحتوي</button>
                 <button onclick="switchTab('pricing')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>💰</span> الأسعار والخصومات</button>
                 <button onclick="switchTab('urgency')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>⏰</span> العداد والطلبات</button>
@@ -94,6 +98,9 @@
             </button>
             <button onclick="switchTab('orders')" class="tab-link-mobile flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-gray-400 font-bold text-[10px]">
                 <span class="text-lg">🛍️</span> الطلبات
+            </button>
+            <button onclick="switchTab('lost')" class="tab-link-mobile flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-gray-500 font-bold text-[10px]">
+                <span class="text-lg">🏚️</span> مفقودة
             </button>
             <button onclick="switchTab('content')" class="tab-link-mobile flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-gray-500 font-bold text-[10px]">
                 <span class="text-lg">✍️</span> محتوي
@@ -290,6 +297,46 @@
                         <!-- Populated by JS -->
                     </div>
                     <button onclick="document.getElementById('status-modal').classList.add('hidden')" class="w-full mt-4 py-3 rounded-2xl border border-white/10 text-gray-400 text-xs font-black hover:bg-white/5">إلغاء</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Lost Orders Panel (Requested) -->
+        <section id="panel-lost" class="section-panel">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div>
+                    <h3 class="text-2xl font-black mb-1">الطلبات المفقودة 🏚️</h3>
+                    <p class="text-xs text-gray-500 font-bold">هذه بيانات عملاء بدأوا في ملئ البيانات ولم يرسلوا الطلب على الواتساب</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="refreshAnalytics()" class="bg-amber-500/10 text-amber-500 text-[10px] font-black px-6 py-3 rounded-xl flex items-center gap-2 border border-amber-500/20">
+                        <span>🔄</span> تحديث القائمة
+                    </button>
+                </div>
+            </div>
+
+            <div class="card overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right" style="min-width: 900px;">
+                        <thead>
+                            <tr class="bg-white/5 text-gray-400 text-[10px] font-black uppercase tracking-widest border-b border-white/5">
+                                <th class="p-4 text-center w-10">#</th>
+                                <th class="p-4">العميل المحتمل</th>
+                                <th class="p-4 text-center">البيانات المتوفرة</th>
+                                <th class="p-4">أخر حقل فُتح</th>
+                                <th class="p-4 text-center">المحافظة</th>
+                                <th class="p-4 text-center">الباقة المختارة</th>
+                                <th class="p-4 text-left">أخر نشاط ↓</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lost-table-body" class="divide-y divide-white/[0.04] font-bold text-sm">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="lost-empty" class="p-20 text-center flex flex-col items-center gap-4">
+                    <div class="text-6xl opacity-20">🏝️</div>
+                    <p class="text-gray-500 font-black italic">لا يوجد طلبات مفقودة حالياً.. كل العملاء أتموا طلباتهم!</p>
                 </div>
             </div>
         </section>
@@ -514,7 +561,16 @@
                 }
             });
 
-            const titles = { 'analytics': 'لوحة الإحصائيات الحية', 'orders': 'إدارة الطلبات المستلمة', 'content': 'مدير المحتوي (CMS)', 'pricing': 'إدارة الباقات والأسعار', 'urgency': 'التحكم في الاستعجال والطلبات', 'social': 'الميديا والآراء الاجتماعية', 'tracking': 'إعدادات التتبع والربط' };
+            const titles = { 
+                'analytics': 'لوحة الإحصائيات الحية', 
+                'orders': 'إدارة الطلبات المستلمة', 
+                'lost': 'الطلبات المفقودة (السلات المهجورة)',
+                'content': 'مدير المحتوي (CMS)', 
+                'pricing': 'إدارة الباقات والأسعار', 
+                'urgency': 'التحكم في الاستعجال والطلبات', 
+                'social': 'الميديا والآراء الاجتماعية', 
+                'tracking': 'إعدادات التتبع والربط' 
+            };
             document.getElementById('current-tab-title').textContent = titles[tabId];
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -731,9 +787,27 @@
                 });
                 bins[6] = todayViews.length > 0 ? todayViews.slice(-10).length : 0; // "Now" activity
 
-                timeCH.data.datasets[0].data = bins;
                 timeCH.update();
             }
+
+            // 🏚️ Lost Orders System (Deduplicate partial data)
+            const abandoned = logs.filter(l => l.event === 'abandoned_checkout');
+            const lostOrdersMap = {};
+            
+            abandoned.forEach(a => {
+                const key = `${a.data.name}_${a.data.phone}_${a.ip_address || 'local'}`;
+                if (!lostOrdersMap[key] || new Date(a.timestamp) > new Date(lostOrdersMap[key].timestamp)) {
+                    const completed = orders.some(o => 
+                        (o.data.phone === a.data.phone && a.data.phone.length > 5) || 
+                        (o.data.name === a.data.name && o.data.city === a.data.city)
+                    );
+                    if (!completed) lostOrdersMap[key] = a;
+                    else delete lostOrdersMap[key];
+                }
+            });
+
+            const lostOrders = Object.values(lostOrdersMap).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            renderLostOrdersTable(lostOrders);
         }
 
         // Charts
@@ -945,6 +1019,66 @@
             }
         }
 
+        // ─── Lost Orders Table Renderer ───────────────────────────
+        function renderLostOrdersTable(lost) {
+            const tableBody = document.getElementById('lost-table-body');
+            const emptyEl = document.getElementById('lost-empty');
+            const badge = document.getElementById('lost-badge');
+
+            if (!tableBody) return;
+
+            if (lost.length === 0) {
+                emptyEl.classList.remove('hidden');
+                tableBody.innerHTML = '';
+                badge.classList.add('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            badge.textContent = lost.length;
+            badge.classList.remove('hidden');
+
+            tableBody.innerHTML = lost.map((o, idx) => {
+                const date = new Date(o.timestamp);
+                const fieldNames = { 'name': 'الاسم', 'phone': 'الهاتف', 'city': 'المحافظة', 'address': 'العنوان' };
+                let filledCount = 0;
+                ['name', 'phone', 'city', 'address'].forEach(f => { if(o.data[f] && o.data[f].trim().length > 0) filledCount++; });
+                
+                const bundleNames = { 1: 'علبة (990)', 2: 'علبتين (1850)', 3: '3 علب (2500)' };
+                const bundle = bundleNames[o.data.bundle] || 'غير محدد';
+
+                return `
+                    <tr class="group hover:bg-white/[0.03] transition-all text-xs border-b border-white/[0.02]">
+                        <td class="p-4 text-center text-gray-600 font-outfit font-black opacity-30">${idx + 1}</td>
+                        <td class="p-4">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-white font-black">${o.data.name || 'عميل مجهول'}</span>
+                                <span class="text-[10px] text-amber-500/80 font-outfit">${o.data.phone || '--'}</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center">
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/5">
+                                <span class="w-1.5 h-1.5 ${filledCount >= 3 ? 'bg-green-500' : 'bg-red-500'} rounded-full"></span>
+                                <span class="text-[10px] font-black">${filledCount} / 4 حقول</span>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <span class="text-xs text-blue-400">⌨️ ${fieldNames[o.data.last_focused] || 'غير محدد'}</span>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="text-gray-400">${o.data.city || 'غير محدد'}</span>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="text-gray-300 font-bold">${bundle}</span>
+                        </td>
+                        <td class="p-4 text-left font-outfit text-gray-500">
+                             ${date.toLocaleDateString('ar-EG-u-nu-latn', {month:'short', day:'numeric'})} | 
+                             <span class="text-[10px] opacity-60">${date.toLocaleTimeString('ar-EG-u-nu-latn', {hour:'2-digit', minute:'2-digit'})}</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
 
         async function exportOrders() {
             const logs = await fetchCloudLogs();

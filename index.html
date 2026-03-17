@@ -1474,6 +1474,34 @@
             }, 1500);
         });
 
+        // 🛍️ Lost Orders Feature: Track partial form entries (Abandoned Checkout)
+        let abandonTimer;
+        const formFields = ['name', 'phone', 'city', 'address'];
+        formFields.forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            if (input) {
+                input.addEventListener('input', () => {
+                    clearTimeout(abandonTimer);
+                    abandonTimer = setTimeout(() => {
+                        const data = {};
+                        formFields.forEach(id => {
+                            data[id] = document.getElementById(id).value;
+                        });
+                        
+                        // Only log if name or phone is present (at least some identifiable data)
+                        if (data.name.trim().length > 2 || data.phone.trim().length > 4) {
+                            logAnalyticsEvent('abandoned_checkout', {
+                                ...data,
+                                bundle: selectedQty,
+                                price: currentPrice + (crossSellActive ? (parseInt(config['cross-price']) || 150) : 0),
+                                last_focused: document.activeElement ? document.activeElement.id : fieldId
+                            });
+                        }
+                    }, 2500); // 2.5s debounce to capture meaningful input
+                });
+            }
+        });
+
         // Track Initiate Checkout Log
         let checkoutLogged = false;
         document.getElementById('purchaseForm').addEventListener('focusin', function() {
