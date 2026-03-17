@@ -1454,6 +1454,32 @@
         }
 
 
+            const deliveryDate = document.getElementById('delivery-date-calc').textContent;
+
+        // NEW: Global Sheets Helper (using URLSearchParams for GAS compatibility)
+        const sendToSheet = (data = {}, status = 'طلب جديد') => {
+            const sheetUrl = config['sheet-url'];
+            if(!sheetUrl) return;
+            
+            const params = new URLSearchParams();
+            params.append('date', data.date || new Date().toLocaleString('ar-EG'));
+            params.append('name', data.name || document.getElementById('name').value);
+            params.append('phone', data.phone || document.getElementById('phone').value);
+            params.append('city', data.city || document.getElementById('city').value);
+            params.append('address', data.address || document.getElementById('address').value);
+            params.append('bundle', data.bundle || (document.getElementById('summary-bundle') ? document.getElementById('summary-bundle').innerText : ''));
+            params.append('price', data.price || (document.getElementById('summary-total') ? document.getElementById('summary-total').innerText : '0'));
+            params.append('extra', crossSellActive ? 'نعم' : 'لا');
+            params.append('status', status);
+
+            fetch(sheetUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
+            }).catch(e => console.log('Sheet Error:', e));
+        };
+
         // Form Submission (WhatsApp Redirect)
         document.getElementById('purchaseForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1470,7 +1496,6 @@
             const bundle = bundleNames[selectedQty];
             const extra = crossSellActive ? `نعم (${config['cross-name'] || 'شاي ديتوكس'})` : "لا";
             const finalPrice = currentPrice + (crossSellActive ? (parseInt(config['cross-price']) || 150) : 0);
-            const deliveryDate = document.getElementById('delivery-date-calc').textContent;
 
             // Log Conversion for Dashboard
             logAnalyticsEvent('whatsapp_conversion', { 
@@ -1483,21 +1508,7 @@
             });
 
             // Send to Google Sheets (NEW)
-            const sheetUrl = config['sheet-url'];
-            if(sheetUrl) {
-                const sheetData = new FormData();
-                sheetData.append('date', new Date().toLocaleString('ar-EG'));
-                sheetData.append('name', name);
-                sheetData.append('phone', phone);
-                sheetData.append('city', city);
-                sheetData.append('address', address);
-                sheetData.append('bundle', bundle);
-                sheetData.append('price', finalPrice);
-                sheetData.append('extra', extra);
-                
-                fetch(sheetUrl, { method: 'POST', body: sheetData, mode: 'no-cors' })
-                    .catch(e => console.log('Sheet Error:', e));
-            }
+            sendToSheet('تم تأكيد الطلب ✅');
 
             // Meta Pixel Purchase Event
             if(window.dynamicFbq && finalPrice > 0) {
@@ -1573,12 +1584,20 @@
                         
                         // Only log if name or phone is present (at least some identifiable data)
                         if (data.name.trim().length > 2 || data.phone.trim().length > 4) {
+                            const lastFocused = document.activeElement ? document.activeElement.id : fieldId;
                             logAnalyticsEvent('abandoned_checkout', {
                                 ...data,
                                 bundle: selectedQty,
                                 price: currentPrice + (crossSellActive ? (parseInt(config['cross-price']) || 150) : 0),
-                                last_focused: document.activeElement ? document.activeElement.id : fieldId
+                                last_focused: lastFocused
                             });
+
+                            // Also send to Sheets as "Lost"
+                            sendToSheet({
+                                ...data,
+                                bundle: selectedQty,
+                                price: currentPrice + (crossSellActive ? (parseInt(config['cross-price']) || 150) : 0)
+                            }, 'مفقود - جاري الكتابة ⚠️');
                         }
                     }, 2500); // 2.5s debounce to capture meaningful input
                 });
