@@ -9,8 +9,8 @@
         // CMS Configuration Bridge
         const defaultConfig = {
             'hero-title': 'وصولك للوزن المثالي مابقاش حلم! ✨',
-            'hero-subtitle': 'اختبري قوة كبسولات لينوزا بلس (Leanoza Plus) البريطانية الأصلية.. سر الرشاقة والجمال الذي تبحثين عنه، الآن في مصر بأقوى تركيبة لسد الشهية وحرق الدهون المستعصية.',
-            'cta-text': 'احصلي على العرض الآن',
+            'hero-subtitle': 'اختبر قوة كبسولات لينوزا بلس (Leanoza Plus) البريطانية الأصلية.. سر الرشاقة والصحة التي تبحث عنها، الآن في مصر بأقوى تركيبة لسد الشهية وحرق الدهون المستعصية.',
+            'cta-text': 'احصل على العرض الآن',
             'product-info': 'عبوة 30 كبسولة (تكفي شهر)',
             'trust-msg': 'منتج بريطاني أصلي مختوم 🇬🇧',
             'delivery-time': 'خلال 24-48 ساعة',
@@ -309,6 +309,19 @@
             color: #5b21b6;
             font-weight: 800;
         }
+        /* Global Responsiveness Tweaks */
+        @media (max-width: 640px) {
+            h1 { font-size: 2.75rem !important; line-height: 1.1 !important; }
+            .container { padding-left: 1rem !important; padding-right: 1rem !important; }
+            .btn-premium { font-size: 1.25rem !important; padding: 1rem !important; border-radius: 1.5rem !important; }
+        }
+        @media (max-width: 400px) {
+            h1 { font-size: 2.2rem !important; }
+            .text-6xl { font-size: 2.5rem !important; }
+        }
+        img { max-width: 100%; height: auto; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -330,7 +343,7 @@
             <a href="#reviews" class="hover:text-primary font-bold">آراء العملاء</a>
         </div>
         <a href="#order" class="bg-secondary text-dark px-6 py-2 rounded-full font-extrabold shadow-lg hover:scale-105 transition-transform">
-            اطلبي الآن
+            اطلب الآن
         </a>
     </nav>
 
@@ -349,12 +362,12 @@
                     في 30 يوم!
                 </h1>
                 <p id="hero-main-subtitle" class="text-xl text-gray-500 font-medium leading-relaxed max-w-2xl">
-                    انضمي لأكثر من <span class="text-primary font-bold">50,000 سيدة</span> استعدن رشقتهن مع لينوزا بلس. التركيبة البريطانية الأقوى لسد الشهية وحرق الدهون بأمان.
+                    انضم لأكثر من <span class="text-primary font-bold">50,000 عميل</span> استعادوا رشاقتهم مع لينوزا بلس. التركيبة البريطانية الأقوى لسد الشهية وحرق الدهون بأمان.
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-6 justify-center md:justify-start pt-4">
                     <a href="#offers" class="btn-premium text-dark text-2xl px-14 py-6 rounded-[2rem] font-black flex flex-col items-center group">
-                        <span class="cta-btn-text">اطلبي عرض الـ 50%</span>
+                        <span class="cta-btn-text">اطلب عرض الـ 50%</span>
                         <span class="text-xs font-bold opacity-70 mt-1 uppercase tracking-widest">توفير حقيقي لفترة محدودة</span>
                     </a>
                 </div>
@@ -405,7 +418,7 @@
     <!-- Problem & Agitation -->
     <section class="py-20 px-6 bg-white">
         <div class="container mx-auto max-w-4xl text-center">
-            <h2 class="text-3xl md:text-5xl font-black text-dark mb-8">هل تعبتِ من المحاولات الفاشلة؟</h2>
+            <h2 class="text-3xl md:text-5xl font-black text-dark mb-8">هل تعبت من المحاولات الفاشلة؟</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="p-6 bg-red-50 rounded-3xl border border-red-100">
                     <div class="text-4xl mb-4">🍕</div>
@@ -443,7 +456,7 @@
                 
                 <!-- Content Side -->
                 <div class="w-full md:w-1/2 order-1 md:order-2 space-y-8">
-                    <h2 class="text-4xl md:text-5xl font-black text-dark leading-tight">لماذا تختارين <span class="text-primary italic">لينوزا بلس؟</span></h2>
+                    <h2 class="text-4xl md:text-5xl font-black text-dark leading-tight">لماذا تختار <span class="text-primary italic">لينوزا بلس؟</span></h2>
                     
                     <ul class="space-y-6">
                         <li class="flex items-start gap-4">
@@ -452,7 +465,7 @@
                             </div>
                             <div>
                                 <h3 class="text-xl font-bold text-dark">سد الشهية فورا</h3>
-                                <p class="text-gray-600">ستشعرين بالشبع لفترات طويلة بفضل مستخلص التوت البري والتركيبة البريطانية.</p>
+                                <p class="text-gray-600">ستشعر بالشبع لفترات طويلة بفضل مستخلص التوت البري والتركيبة البريطانية.</p>
                             </div>
                         </li>
                         <li class="flex items-start gap-4">
@@ -476,7 +489,7 @@
                     </ul>
 
                     <a href="#order" class="inline-block bg-primary text-white text-xl px-12 py-5 rounded-2xl font-black shadow-lg hover:scale-105 transition-all">
-                        اريد الحصول عليه الآن
+                        احصل عليه الآن
                     </a>
                 </div>
             </div>
@@ -492,7 +505,7 @@
                 <div class="relative z-10">
                     <div class="w-20 h-20 bg-secondary text-dark text-4xl font-black rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">1</div>
                     <h3 class="text-2xl font-bold mb-4">الكبسولة اليومية</h3>
-                    <p class="text-gray-400 font-medium">تناولي كبسولة واحدة يومياً قبل الإفطار بنصف ساعة مع كوبين ماء.</p>
+                    <p class="text-gray-400 font-medium">تناول كبسولة واحدة يومياً قبل الإفطار بنصف ساعة مع كوبين ماء.</p>
                 </div>
                 <!-- Step 2 -->
                 <div class="relative z-10">
@@ -504,7 +517,7 @@
                 <div class="relative z-10">
                     <div class="w-20 h-20 bg-secondary text-dark text-4xl font-black rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">3</div>
                     <h3 class="text-2xl font-bold mb-4">خسارة الوزن</h3>
-                    <p class="text-gray-400 font-medium">تابعي الميزان أسبوعياً ولاحظي كيف يتغير مقاس ملابسك للأفضل!</p>
+                    <p class="text-gray-400 font-medium">تابع الميزان أسبوعياً ولاحظ كيف يتغير مقاس ملابسك للأفضل!</p>
                 </div>
                 
                 <!-- Connector Line (Desktop Only) -->
@@ -549,7 +562,7 @@
         <div class="container mx-auto max-w-5xl">
             <div class="text-center mb-16 space-y-4">
                 <h2 class="text-4xl md:text-5xl font-black text-dark">نتائج حقيقية من عملائنا 📸</h2>
-                <p class="text-gray-500 font-medium italic">صور مرسلة من عميلات حقيقيات بعد انتهاء كورس الـ 60 يوم</p>
+                <p class="text-gray-500 font-medium italic">صور مرسلة من عملاء حقيقيين بعد انتهاء كورس الـ 60 يوم</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -592,7 +605,7 @@
                     <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                     <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                 </div>
-                <p class="text-gray-500">تقييم 4.9/5 بناءً على أكثر من 50,000 عميلة في مصر</p>
+                <p class="text-gray-500">تقييم 4.9/5 بناءً على أكثر من 50,000 عميل في مصر</p>
             </div>
 
             <div class="flex overflow-x-auto gap-8 pb-8 no-scrollbar scroll-smooth snap-x">
@@ -637,7 +650,7 @@
     <section id="offers" class="py-24 px-6 bg-white relative overflow-hidden">
         <div class="container mx-auto max-w-6xl">
             <div class="text-center mb-16 space-y-4">
-                <h2 class="text-4xl md:text-5xl font-black text-dark">اختاري العرض المناسب لكِ 🎁</h2>
+                <h2 class="text-4xl md:text-5xl font-black text-dark">اختر العرض المناسب لك 🎁</h2>
                 <p class="text-gray-500 font-medium">أفضل النتائج تظهر مع الاستخدام المستمر لمدة شهرين على الأقل</p>
             </div>
             
@@ -674,7 +687,7 @@
                         </li>
                     </ul>
                     
-                    <button class="w-full py-5 rounded-2xl bg-white border-2 border-primary text-primary font-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">اختاري العرض</button>
+                    <button class="w-full py-5 rounded-2xl bg-white border-2 border-primary text-primary font-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">اختر العرض</button>
                     <p class="text-center text-[10px] text-gray-400 mt-4 font-bold italic font-outfit uppercase">Save 550 EGP Today</p>
                 </div>
                 
@@ -719,7 +732,7 @@
                         </li>
                     </ul>
                     
-                    <button class="w-full py-6 rounded-2xl bg-primary text-white font-black hover:brightness-110 shadow-[0_20px_40px_-10px_rgba(91,33,182,0.4)] transition-all text-xl">اختاري هذا العرض الآن</button>
+                    <button class="w-full py-6 rounded-2xl bg-primary text-white font-black hover:brightness-110 shadow-[0_20px_40px_-10px_rgba(91,33,182,0.4)] transition-all text-xl">اختر هذا العرض الآن</button>
                     <p class="text-center text-xs text-primary mt-4 font-black flex items-center justify-center gap-2">
                          باقي 7 عروض فقط بهذا السعر!
                     </p>
@@ -763,7 +776,7 @@
                         </li>
                     </ul>
                     
-                    <button class="w-full py-5 rounded-2xl bg-accent text-white font-black hover:scale-105 transition-all shadow-xl">اطلبي عرض الـ VIP</button>
+                    <button class="w-full py-5 rounded-2xl bg-accent text-white font-black hover:scale-105 transition-all shadow-xl">اطلب عرض الـ VIP</button>
                     <p class="text-center text-[10px] text-slate-500 mt-4 font-bold uppercase tracking-widest">Only 3 slots available per day</p>
                 </div>
             </div>
@@ -899,7 +912,7 @@
                             <!-- City Selector -->
                             <div class="form-group">
                                 <select id="city" required class="form-input appearance-none bg-slate-50 cursor-pointer">
-                                    <option value="" disabled selected>اختاري المحافظة</option>
+                                    <option value="" disabled selected>اختر المحافظة</option>
                                     <option value="القاهرة">القاهرة</option>
                                     <option value="الجيزة">الجيزة</option>
                                     <option value="الإسكندرية">الإسكندرية</option>
@@ -1044,7 +1057,7 @@
         <a href="#order" class="flex items-center justify-between bg-primary text-white p-4 rounded-2xl shadow-2xl border-2 border-white/20">
             <div class="flex flex-col">
                 <span class="text-[10px] font-bold opacity-80 uppercase">توصيل لـ <span class="user-city">دمنهور</span> خلال 24 ساعة</span>
-                <span class="text-lg font-black">اطلبي الآن - الدفع عند الاستلام</span>
+                <span class="text-lg font-black">اطلب الآن - الدفع عند الاستلام</span>
             </div>
             <div class="bg-secondary text-dark p-2 rounded-xl">
                 🛍️
