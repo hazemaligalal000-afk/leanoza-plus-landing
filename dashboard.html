@@ -49,6 +49,10 @@
 
             <nav class="space-y-1">
                 <button onclick="switchTab('analytics')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl active-menu bg-green-500/10 text-green-500 font-bold"><span>📊</span> الإحصائيات</button>
+                <button onclick="switchTab('orders')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all relative">
+                    <span>🛍️</span> الطلبات
+                    <span id="orders-badge" class="absolute left-6 top-1/2 -translate-y-1/2 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full hidden">0</span>
+                </button>
                 <button onclick="switchTab('content')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>✍️</span> تعديل المحتوي</button>
                 <button onclick="switchTab('pricing')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>💰</span> الأسعار والخصومات</button>
                 <button onclick="switchTab('urgency')" class="tab-link w-full flex items-center gap-4 px-6 py-4 rounded-xl text-gray-400 hover:text-white font-bold transition-all"><span>⏰</span> العداد والطلبات</button>
@@ -87,6 +91,9 @@
         <nav class="mobile-nav lg:hidden px-2 py-3 overflow-x-auto no-scrollbar gap-2">
             <button onclick="switchTab('analytics')" class="tab-link-mobile flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-green-500 font-black text-[10px] bg-green-500/10">
                 <span class="text-lg">📊</span> إحصائيات
+            </button>
+            <button onclick="switchTab('orders')" class="tab-link-mobile flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-gray-400 font-bold text-[10px]">
+                <span class="text-lg">🛍️</span> الطلبات
             </button>
             <button onclick="switchTab('content')" class="tab-link-mobile flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2 rounded-xl text-gray-500 font-bold text-[10px]">
                 <span class="text-lg">✍️</span> محتوي
@@ -213,6 +220,77 @@
                           </table>
                       </div>
                  </div>
+            </div>
+        </section>
+
+        <!-- 7. Orders Panel (New) -->
+        <section id="panel-orders" class="section-panel">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div>
+                    <h3 class="text-2xl font-black mb-1">الطلبات 📦</h3>
+                    <p class="text-xs text-gray-500 font-bold">يمكنك التحكم في طلباتك وفلترتها حسب الحالة و تعديل حالتها بالضغط على اي طلب وتعديل حالته</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="exportOrders()" class="glass text-[10px] font-black px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-1">
+                        <span>📤</span> تصدير
+                    </button>
+                    <button onclick="refreshAnalytics()" class="bg-green-500 text-black text-[10px] font-black px-4 py-3 rounded-xl flex items-center gap-1 hover:opacity-90">
+                        <span>➕</span> إنشاء طلب
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Tabs matching screenshot -->
+            <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+                <span class="text-gray-500 text-[10px] font-black ml-2 flex-shrink-0">☰ إضافة فلتر</span>
+                <button onclick="filterOrders('all')" class="order-filter-btn active flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border border-green-500/30 bg-green-500/10 text-green-500" data-filter="all">كل الطلبات</button>
+                <button onclick="filterOrders('new')" class="order-filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border border-white/10 text-gray-400 hover:border-white/20" data-filter="new">جديد</button>
+                <button onclick="filterOrders('pending')" class="order-filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border border-white/10 text-gray-400 hover:border-white/20" data-filter="pending">في انتظار الدفع</button>
+                <button onclick="filterOrders('confirmed')" class="order-filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border border-white/10 text-gray-400 hover:border-white/20" data-filter="confirmed">تم التأكيد</button>
+                <button onclick="filterOrders('preparing')" class="order-filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border border-white/10 text-gray-400 hover:border-white/20" data-filter="preparing">قيد التجهيز للشحن</button>
+                <button onclick="filterOrders('shipped')" class="order-filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border border-white/10 text-gray-400 hover:border-white/20" data-filter="shipped">بانتظار الشحن</button>
+                <button onclick="filterOrders('delivered')" class="order-filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border border-white/10 text-gray-400 hover:border-white/20" data-filter="delivered">تم التوصيل</button>
+                <button onclick="filterOrders('cancelled')" class="order-filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border border-white/10 text-gray-400 hover:border-white/20" data-filter="cancelled">تم إلغاء الطلب</button>
+                <button onclick="filterOrders('returned')" class="order-filter-btn flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border border-white/10 text-gray-400 hover:border-white/20" data-filter="returned">مرتجع من الا</button>
+            </div>
+
+            <div class="card overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right" style="min-width: 900px;">
+                        <thead>
+                            <tr class="bg-white/5 text-gray-400 text-[10px] font-black uppercase tracking-widest border-b border-white/5">
+                                <th class="p-4 text-center w-10"><input type="checkbox" class="w-4 h-4 accent-green-500 rounded"></th>
+                                <th class="p-4 text-right">المعرف ↕</th>
+                                <th class="p-4 text-right">العميل</th>
+                                <th class="p-4 text-right" style="min-width:180px;">العنوان</th>
+                                <th class="p-4 text-center">المبلغ الاجمالي</th>
+                                <th class="p-4 text-center">حالة الطلب</th>
+                                <th class="p-4 text-center">Data Quality</th>
+                                <th class="p-4 text-center">IP Country</th>
+                                <th class="p-4 text-left">تاريخ الطلب ↓</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body" class="divide-y divide-white/[0.04] font-bold text-sm">
+                            <!-- Orders go here via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="orders-empty" class="p-20 text-center flex flex-col items-center gap-4">
+                    <div class="text-6xl opacity-20">📭</div>
+                    <p class="text-gray-500 font-black italic">لا يوجد طلبات حالياً.. بانتظار أول عميل!</p>
+                </div>
+            </div>
+
+            <!-- Status Change Modal -->
+            <div id="status-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[3000] hidden items-center justify-center p-6" onclick="if(event.target===this) this.classList.add('hidden')">
+                <div class="bg-[#0d0d0d] border border-white/10 rounded-3xl p-8 max-w-sm w-full">
+                    <h4 class="font-black text-lg mb-6 text-center">تغيير حالة الطلب</h4>
+                    <div id="status-modal-order-info" class="bg-white/5 rounded-2xl p-4 mb-6 text-xs text-gray-400"></div>
+                    <div class="grid grid-cols-2 gap-3" id="status-options">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button onclick="document.getElementById('status-modal').classList.add('hidden')" class="w-full mt-4 py-3 rounded-2xl border border-white/10 text-gray-400 text-xs font-black hover:bg-white/5">إلغاء</button>
+                </div>
             </div>
         </section>
 
@@ -436,7 +514,7 @@
                 }
             });
 
-            const titles = { 'analytics': 'لوحة الإحصائيات الحية', 'content': 'مدير المحتوي (CMS)', 'pricing': 'إدارة الباقات والأسعار', 'urgency': 'التحكم في الاستعجال والطلبات', 'social': 'الميديا والآراء الاجتماعية', 'tracking': 'إعدادات التتبع والربط' };
+            const titles = { 'analytics': 'لوحة الإحصائيات الحية', 'orders': 'إدارة الطلبات المستلمة', 'content': 'مدير المحتوي (CMS)', 'pricing': 'إدارة الباقات والأسعار', 'urgency': 'التحكم في الاستعجال والطلبات', 'social': 'الميديا والآراء الاجتماعية', 'tracking': 'إعدادات التتبع والربط' };
             document.getElementById('current-tab-title').textContent = titles[tabId];
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -533,16 +611,19 @@
         }
 
         async function refreshAnalytics() {
-            let logs = await fetchCloudLogs();
+            let allLogs = await fetchCloudLogs();
+
+            // For analytics KPI stats, use last 24 hours
+            const oneDayAgo = new Date(Date.now() - 24 * 60 * 60000).getTime();
+            let logs = allLogs.filter(l => new Date(l.timestamp).getTime() >= oneDayAgo);
             
-            // Filter ALL logs to strictly the last hour (60 minutes)
-            const oneHourAgo = new Date(Date.now() - 60 * 60000).getTime();
-            logs = logs.filter(l => new Date(l.timestamp).getTime() >= oneHourAgo);
-            
+            // Orders: use ALL-time data so every order is always visible
+            const allOrders = allLogs.filter(l => l.event === 'whatsapp_conversion');
+
             const views = logs.filter(l => l.event === 'page_view');
             const atc = logs.filter(l => l.event === 'add_to_cart');
             const checkout = logs.filter(l => l.event === 'initiate_checkout');
-            const orders = logs.filter(l => l.event === 'whatsapp_conversion');
+            const orders = allOrders; // Show all orders always
 
             document.getElementById('stat-views').textContent = views.length.toLocaleString();
             document.getElementById('stat-atc').textContent = atc.length.toLocaleString();
@@ -617,16 +698,20 @@
             `).join('') || '<p class="text-[10px] text-gray-600 italic">لا يوجد بيانات مناطق حتى الآن</p>';
 
             // Live Feed
-            const recent = logs.slice(-6).reverse();
-            document.getElementById('live-feed').innerHTML = recent.map(r => `
+            const recent = logs.slice(-10).reverse();
+            document.getElementById('live-feed').innerHTML = recent.filter(r=>r.event !== 'whatsapp_conversion').map(r => `
                 <tr class="group hover:bg-white/5 transition-all">
                     <td class="py-4 pr-2">
-                        <span class="px-2 py-1 rounded-md text-[9px] ${r.event==='whatsapp_conversion'?'bg-green-500/10 text-green-500':'bg-white/5 text-gray-400'} uppercase">${r.event.replace('_', ' ')}</span>
+                        <span class="px-2 py-1 rounded-md text-[9px] bg-white/5 text-gray-400 uppercase">${r.event.replace('_', ' ')}</span>
                     </td>
                     <td class="py-4 text-center text-gray-500">${r.data.city || '--'}</td>
                     <td class="py-4 text-left pl-2 opacity-40 text-[10px]">${new Date(r.timestamp).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</td>
                 </tr>
             `).join('');
+
+            // Full Orders Table
+            window._allOrdersCache = orders; // cache for filter use
+            renderOrdersTable(orders);
 
             // Update Time Chart Logic from Real Data
             if (timeCH && views.length > 0) {
@@ -688,6 +773,210 @@
             if(values[0] === 0 && values[1] === 0) return;
             deviceCH.data.datasets[0].data = values;
             deviceCH.update();
+        }
+
+        // ─── Orders Table Renderer ───────────────────────────────
+        const ORDER_STATUSES = {
+            'pending':   { label: 'في انتظار الدفع',        class: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' },
+            'new':       { label: 'جديد',                   class: 'bg-green-500/10 text-green-500 border-green-500/20' },
+            'confirmed': { label: 'تم التأكيد',             class: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+            'preparing': { label: 'قيد التجهيز للشحن',      class: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+            'shipped':   { label: 'بانتظار الشحن',          class: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' },
+            'delivered': { label: 'تم التوصيل',             class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+            'cancelled': { label: 'تم إلغاء الطلب',         class: 'bg-red-500/10 text-red-500 border-red-500/20' },
+            'returned':  { label: 'مرتجع من العميل',        class: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
+        };
+
+        function getOrderStatus(ts) {
+            const statuses = JSON.parse(localStorage.getItem('order_statuses') || '{}');
+            return statuses[ts] || 'pending';
+        }
+
+        function renderOrdersTable(orders) {
+            const ordersBody = document.getElementById('orders-table-body');
+            const emptyEl = document.getElementById('orders-empty');
+            const badge = document.getElementById('orders-badge');
+
+            if (!ordersBody) return;
+
+            if (orders.length === 0) {
+                emptyEl.classList.remove('hidden');
+                ordersBody.innerHTML = '';
+                badge.classList.add('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            badge.textContent = orders.length;
+            badge.classList.remove('hidden');
+
+            const viewedIds = JSON.parse(localStorage.getItem('viewed_orders') || '[]');
+
+            ordersBody.innerHTML = orders.map((o, idx) => {
+                const date = new Date(o.timestamp);
+                const isViewed = viewedIds.includes(o.timestamp);
+                const statusKey = getOrderStatus(o.timestamp);
+                const status = ORDER_STATUSES[statusKey] || ORDER_STATUSES['pending'];
+                const orderId = orders.length - idx;
+
+                // Build address "title" line like screenshot
+                const titleLine = o.data.bundle 
+                    ? `يجب دفع الرصيد المستحق الدفع\nلمشاهدة الطلب`
+                    : 'بيانات الطلب';
+
+                return `
+                    <tr class="group hover:bg-white/[0.03] transition-all text-xs cursor-pointer"
+                        onclick="openStatusModal('${o.timestamp}', ${orderId})">
+                        <td class="p-4 text-center">
+                            <input type="checkbox" class="w-3.5 h-3.5 accent-green-500 rounded" onclick="event.stopPropagation()">
+                        </td>
+                        <td class="p-4 text-gray-400 font-outfit">${orderId}</td>
+                        <td class="p-4">
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-2">
+                                    ${!isViewed ? '<span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></span>' : ''}
+                                    <span class="text-white font-bold">${(o.data.name || 'عميل مجهول').replace(/(.{4}).*/, '$1****')}</span>
+                                </div>
+                                <span class="text-[10px] text-gray-600 font-outfit">${(o.data.phone || '').replace(/^(.{3})(.*)(.{2})$/, '$1****$3')}</span>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex flex-col gap-0.5 max-w-[200px]">
+                                <span class="text-gray-400 text-[10px] leading-tight">\u064a\u062c\u0628 \u062f\u0641\u0639 \u0627\u0644\u0631\u0635\u064a\u062f \u0627\u0644\u0645\u0633\u062a\u062d\u0642 \u0627\u0644\u062f\u0641\u0639</span>
+                                <span class="text-gray-500 text-[9px] italic">\u0644\u0645\u0634\u0627\u0647\u062f\u0629 \u0627\u0644\u0637\u0644\u0628</span>
+                                <span class="text-green-600 text-[9px] font-bold mt-1">📍 ${o.data.city || '--'}</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="text-white font-black italic font-outfit">${o.data.price || 0}</span>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="px-3 py-1.5 text-[9px] rounded-lg font-black italic border ${status.class} whitespace-nowrap">
+                                ⊙ ${status.label}
+                            </span>
+                        </td>
+                        <td class="p-4 text-center">
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="flex gap-0.5">
+                                    <div class="w-2.5 h-1 bg-green-500 rounded-sm"></div>
+                                    <div class="w-2.5 h-1 bg-green-500 rounded-sm"></div>
+                                    <div class="w-2.5 h-1 bg-green-500/20 rounded-sm"></div>
+                                </div>
+                                <span class="text-[8px] text-gray-600 uppercase font-outfit">High</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center text-gray-500 font-outfit uppercase text-[10px]">${o.ip_country || o.data.country || 'eg'}</td>
+                        <td class="p-4 text-left">
+                            <div class="flex flex-col items-end gap-0.5">
+                                <span class="text-gray-400">${date.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit', second:'2-digit'})}</span>
+                                <span class="text-[9px] text-gray-600">${date.toLocaleDateString('ar-EG')}</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterOrders(filterKey) {
+            // Update button styles
+            document.querySelectorAll('.order-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-green-500/10', 'text-green-500', 'border-green-500/30');
+                btn.classList.add('border-white/10', 'text-gray-400');
+            });
+            const activeBtn = document.querySelector(`.order-filter-btn[data-filter="${filterKey}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-green-500/10', 'text-green-500', 'border-green-500/30');
+                activeBtn.classList.remove('border-white/10', 'text-gray-400');
+            }
+
+            const allOrders = window._allOrdersCache || [];
+            if (filterKey === 'all') {
+                renderOrdersTable(allOrders);
+            } else {
+                const filtered = allOrders.filter(o => getOrderStatus(o.timestamp) === filterKey);
+                renderOrdersTable(filtered);
+            }
+        }
+
+        function openStatusModal(ts, orderId) {
+            markAsViewed(ts);
+            const modal = document.getElementById('status-modal');
+            const infoEl = document.getElementById('status-modal-order-info');
+            const optionsEl = document.getElementById('status-options');
+
+            infoEl.innerHTML = `<span class="font-black text-white">طلب #${orderId}</span> — تغيير الحالة الحالية`;
+
+            optionsEl.innerHTML = Object.entries(ORDER_STATUSES).map(([key, val]) => `
+                <button onclick="applyOrderStatus('${ts}', '${key}'); event.stopPropagation();"
+                    class="py-3 px-2 rounded-2xl border ${val.class} text-[10px] font-black hover:opacity-80 transition-all">
+                    ${val.label}
+                </button>
+            `).join('');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function applyOrderStatus(ts, statusKey) {
+            const statuses = JSON.parse(localStorage.getItem('order_statuses') || '{}');
+            statuses[ts] = statusKey;
+            localStorage.setItem('order_statuses', JSON.stringify(statuses));
+
+            document.getElementById('status-modal').classList.add('hidden');
+            document.getElementById('status-modal').classList.remove('flex');
+
+            // Re-render with cached data
+            const allOrders = window._allOrdersCache || [];
+            renderOrdersTable(allOrders);
+
+            // Show toast
+            const toast = document.getElementById('toast');
+            const status = ORDER_STATUSES[statusKey];
+            toast.innerText = `✅ تم تغيير الحالة إلى: ${status.label}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function markAsViewed(id) {
+            const viewedIds = JSON.parse(localStorage.getItem('viewed_orders') || '[]');
+            if(!viewedIds.includes(id)) {
+                viewedIds.push(id);
+                localStorage.setItem('viewed_orders', JSON.stringify(viewedIds));
+            }
+        }
+
+
+        async function exportOrders() {
+            const logs = await fetchCloudLogs();
+            const orders = logs.filter(l => l.event === 'whatsapp_conversion');
+            
+            if(orders.length === 0) return alert('لا يوجد طلبات لتصديرها');
+
+            const headers = ['Order #', 'Name', 'Phone', 'City', 'Address', 'Bundle', 'Price', 'Date', 'IP', 'Country'];
+            const rows = orders.map((o, idx) => [
+                orders.length - idx,
+                o.data.name || '',
+                o.data.phone || '',
+                o.data.city || '',
+                o.data.address || '',
+                o.data.bundle || '',
+                o.data.price || 0,
+                new Date(o.timestamp).toLocaleString('ar-EG'),
+                o.ip_address || '',
+                o.ip_country || ''
+            ]);
+
+            let csvContent = "data:text/csv;charset=utf-8," 
+                + headers.join(",") + "\n"
+                + rows.map(e => e.join(",")).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `leanoza_orders_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         document.addEventListener('DOMContentLoaded', () => {

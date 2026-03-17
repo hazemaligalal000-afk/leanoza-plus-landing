@@ -15,6 +15,10 @@ export default async function handler(req, res) {
             
         } else if (req.method === 'POST') {
             const ev = req.body;
+            // Enrich with request metadata
+            ev.ip_country = req.headers['x-vercel-ip-country'] || 'eg';
+            ev.ip_address = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || '';
+            
             // Push event
             await kv.lpush('leanoza_analytics', ev);
             // Cap to 3000 events to save storage
