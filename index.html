@@ -17,8 +17,8 @@
             'footer-year': '2026',
             'p1-price': 600, 'p1-label': 'باقة التجربة (علبة واحدة)', 'p1-bonus': 'كورس 30 يوم • حرق 4-7 كجم',
             'p2-price': 990, 'p2-label': 'الباقة الأكثر طلباً (علبتين)', 'p2-bonus': 'كورس 60 يوم • حرق 10-15 كجم • شحن مجاني',
-            'p3-price': 1350, 'p3-label': 'باقة التحدي VIP (3 علب)', 'p3-bonus': 'كورس 90 يوم • حرق 20+ كجم • شحن مجاني • عبوة أعشاب او نقط Brand Cap هدية',
-            'cross-name': 'أعشاب او نقط Brand Cap', 'cross-price': 150,
+            'p3-price': 1350, 'p3-label': 'باقة التحدي VIP (3 علب)', 'p3-bonus': 'كورس 90 يوم • حرق 20+ كجم • شحن مجاني • عبوة نقط أو أعشاب Brand Cap هدية',
+            'cross-name': 'نقط أو أعشاب Brand Cap', 'cross-price': 150,
             'timer-hours': 3, 'stock-left': 7, 'exit-code': 'OFFER50',
             'cities': 'القاهرة، الجيزة، الإسكندرية، طنطا، المنصورة',
             'notif-freq': 15, 'whatsapp': '201010120752',
@@ -838,7 +838,7 @@
                             <span class="text-accent text-xl">⭐</span>
                         </li>
                         <li class="flex items-center gap-3 justify-end text-sm font-bold text-slate-300">
-                            <span>هدية: عبوة أعشاب او نقط Brand Cap مجانية</span>
+                            <span>هدية: عبوة نقط أو أعشاب Brand Cap مجانية</span>
                             <span class="text-accent text-xl">⭐</span>
                         </li>
                         <li class="flex items-center gap-3 justify-end text-sm font-bold text-slate-300">
@@ -869,7 +869,7 @@
             <div class="w-24 h-24 bg-white/10 rounded-3xl flex items-center justify-center text-4xl shadow-inner">🍵</div>
             <div class="text-center md:text-right flex-1 space-y-2">
                 <span class="bg-secondary text-dark px-3 py-1 rounded-lg text-[10px] font-black uppercase">عرض تكميلي</span>
-                <h3 id="cross-sell-name" class="text-2xl font-black italic">ضيفي (أعشاب او نقط Brand Cap) لنتائج أسرع 2X</h3>
+                <h3 id="cross-sell-name" class="text-2xl font-black italic">ضيفي (نقط أو أعشاب Brand Cap) لنتائج أسرع 2X</h3>
                 <div class="text-[13px] opacity-90 leading-relaxed font-bold mt-2">
                     <p class="mb-1">💧 <span class="text-secondary">النقط:</span> تعمل على رفع معدل الحرق 3 أضعاف الحرق الطبيعي</p>
                     <p class="mb-2">🌿 <span class="text-secondary">الأعشاب:</span> تعمل على إخراج الدهون والسموم والأملاح الزيادة من الجسم</p>
@@ -920,7 +920,7 @@
                                 <span id="summary-base-price" class="font-bold text-dark">990 ج.م</span>
                             </div>
                             <div class="flex justify-between items-center text-gray-600 hidden" id="summary-extra">
-                                <span>إضافات (أعشاب او نقط Brand Cap):</span>
+                                <span>إضافات (نقط أو أعشاب Brand Cap):</span>
                                 <span class="font-bold text-accent">+150 ج.م</span>
                             </div>
                             <div class="flex justify-between items-center text-accent font-bold">
@@ -1524,7 +1524,7 @@
                 3: config['p3-label'] || "3 علب" 
             };
             const bundle = bundleNames[selectedQty];
-            const extra = crossSellActive ? `نعم (${config['cross-name'] || 'أعشاب او نقط Brand Cap'})` : "لا";
+            const extra = crossSellActive ? `نعم (${config['cross-name'] || 'نقط أو أعشاب Brand Cap'})` : "لا";
             const finalPrice = currentPrice + (crossSellActive ? (parseInt(config['cross-price']) || 150) : 0);
 
             // Log Conversion for Dashboard
@@ -1565,7 +1565,7 @@
                             `🏠 *العنوان:* ${address}\n` +
                             `--------------------------\n` +
                             `📦 *الطلب:* ${bundle}\n` +
-                            `🌿 *إضافة أعشاب او نقط Brand Cap:* ${extra}\n` +
+                            `🌿 *إضافة نقط أو أعشاب Brand Cap:* ${extra}\n` +
                             `💰 *الإجمالي النهائي:* ${finalPrice} ج.م\n` +
                             `🚚 *موعد التوصيل المتوقع:* ${deliveryDate}\n` +
                             `--------------------------\n` +
