@@ -15,10 +15,10 @@
             'trust-msg': 'منتج بريطاني أصلي مختوم 🇬🇧',
             'delivery-time': 'خلال 24-48 ساعة',
             'footer-year': '2026',
-            'p1-price': 550, 'p1-label': 'باقة التجربة (علبة واحدة)', 'p1-bonus': 'كورس 30 يوم • حرق 4-7 كجم',
+            'p1-price': 600, 'p1-label': 'باقة التجربة (علبة واحدة)', 'p1-bonus': 'كورس 30 يوم • حرق 4-7 كجم',
             'p2-price': 990, 'p2-label': 'الباقة الأكثر طلباً (علبتين)', 'p2-bonus': 'كورس 60 يوم • حرق 10-15 كجم • شحن مجاني',
-            'p3-price': 1350, 'p3-label': 'باقة التحدي VIP (3 علب)', 'p3-bonus': 'كورس 90 يوم • حرق 20+ كجم • شحن مجاني • علبة ديتوكس هدية',
-            'cross-name': 'شاي ديتوكس أعشاب بريطانية', 'cross-price': 150,
+            'p3-price': 1350, 'p3-label': 'باقة التحدي VIP (3 علب)', 'p3-bonus': 'كورس 90 يوم • حرق 20+ كجم • شحن مجاني • عبوة أعشاب او نقط Brand Cap هدية',
+            'cross-name': 'أعشاب او نقط Brand Cap', 'cross-price': 150,
             'timer-hours': 3, 'stock-left': 7, 'exit-code': 'OFFER50',
             'cities': 'القاهرة، الجيزة، الإسكندرية، طنطا، المنصورة',
             'notif-freq': 15, 'whatsapp': '201010120752',
@@ -525,6 +525,32 @@
                 <div class="hidden md:block absolute top-10 left-[20%] right-[20%] h-1 bg-white/10"></div>
             </div>
             
+            <!-- Intensive Course (Capsules + Herbs + Drops) Breakdown -->
+            <div class="mt-20 bg-white/5 p-8 md:p-12 rounded-[2.5rem] border border-white/10 text-right max-w-4xl mx-auto shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full -mr-16 -mt-16 blur-xl pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-primary/20 rounded-full -ml-16 -mb-16 blur-xl pointer-events-none"></div>
+                
+                <h3 class="text-2xl md:text-3xl font-black text-secondary mb-10 text-center relative z-10">🔥 الكورس المكثف الكامل (كبسولات + أعشاب + نقط)</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-lg font-bold relative z-10">
+                    <div class="flex items-start gap-5 group">
+                        <div class="text-5xl mt-1 transform group-hover:scale-110 transition-transform">💧</div>
+                        <div>
+                            <h4 class="text-2xl font-black text-white mb-2 underline decoration-secondary underline-offset-4">تعليمات النقط</h4>
+                            <p class="text-gray-400 text-sm leading-relaxed">تعمل على رفع معدل الحرق <span class="text-white">3 أضعاف الحرق الطبيعي</span> بشكل آمن وسريع.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-5 group">
+                        <div class="text-5xl mt-1 transform group-hover:scale-110 transition-transform">🌿</div>
+                        <div>
+                            <h4 class="text-2xl font-black text-white mb-2 underline decoration-accent underline-offset-4">تعليمات الأعشاب</h4>
+                            <p class="text-gray-400 text-sm leading-relaxed">تعمل على إخراج <span class="text-white">الدهون والسموم والأملاح الزيادة</span> من الجسم نهائياً.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </section>
 
@@ -709,7 +735,7 @@
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Bundle 1 -->
-                <div id="card-p1" class="bundle-card cursor-pointer bg-slate-50 border-2 border-slate-100 rounded-[2.5rem] p-10 flex flex-col group relative" onclick="selectBundle(1, config['p1-price'] || 550)">
+                <div id="card-p1" class="bundle-card cursor-pointer bg-slate-50 border-2 border-slate-100 rounded-[2.5rem] p-10 flex flex-col group relative" onclick="selectBundle(1, config['p1-price'] || 600)">
                     <div class="mb-6">
                         <p class="text-primary font-bold mb-1 uppercase text-[10px] tracking-widest text-center">للمبتدئين</p>
                         <h3 id="label-p1" class="text-3xl font-black text-dark text-center">عـبوة واحدة</h3>
@@ -717,8 +743,8 @@
                     
                     <div class="flex flex-col items-center mb-8">
                         <div id="bonus-p1" class="bg-primary/10 text-primary px-4 py-1 rounded-full text-xs font-bold mb-4 italic">خسارة من 4 لـ 7 كجم</div>
-                        <span class="text-5xl font-black text-primary italic"><span id="price-p1">550</span> <span class="text-lg font-cairo">ج.م</span></span>
-                        <span class="text-gray-400 line-through mt-2"><span class="old-price-p1">1100</span> ج.م</span>
+                        <span class="text-5xl font-black text-primary italic"><span id="price-p1">600</span> <span class="text-lg font-cairo">ج.م</span></span>
+                        <span class="text-gray-400 line-through mt-2"><span class="old-price-p1">1200</span> ج.م</span>
                     </div>
 
                     <ul class="flex-1 space-y-4 text-right mb-8">
@@ -741,7 +767,7 @@
                     </ul>
                     
                     <button class="w-full py-5 rounded-2xl bg-white border-2 border-primary text-primary font-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">اختر العرض</button>
-                    <p class="text-center text-[10px] text-gray-400 mt-4 font-bold italic font-outfit uppercase">Save 550 EGP Today</p>
+                    <p class="text-center text-[10px] text-gray-400 mt-4 font-bold italic font-outfit uppercase">Save 600 EGP Today</p>
                 </div>
                 
                 <!-- Bundle 2 - Upsell -->
@@ -812,7 +838,7 @@
                             <span class="text-accent text-xl">⭐</span>
                         </li>
                         <li class="flex items-center gap-3 justify-end text-sm font-bold text-slate-300">
-                            <span>هدية: عبوة ديتوكس مجانية</span>
+                            <span>هدية: عبوة أعشاب او نقط Brand Cap مجانية</span>
                             <span class="text-accent text-xl">⭐</span>
                         </li>
                         <li class="flex items-center gap-3 justify-end text-sm font-bold text-slate-300">
@@ -843,8 +869,12 @@
             <div class="w-24 h-24 bg-white/10 rounded-3xl flex items-center justify-center text-4xl shadow-inner">🍵</div>
             <div class="text-center md:text-right flex-1 space-y-2">
                 <span class="bg-secondary text-dark px-3 py-1 rounded-lg text-[10px] font-black uppercase">عرض تكميلي</span>
-                <h3 id="cross-sell-name" class="text-2xl font-black italic">ضيفي (شاي الديتوكس) لنتائج أسرع 2X</h3>
-                <p class="text-sm opacity-80">يعمل مع الكبسولات على طرد السموم وتقليل الانتفاخات فورا</p>
+                <h3 id="cross-sell-name" class="text-2xl font-black italic">ضيفي (أعشاب او نقط Brand Cap) لنتائج أسرع 2X</h3>
+                <div class="text-[13px] opacity-90 leading-relaxed font-bold mt-2">
+                    <p class="mb-1">💧 <span class="text-secondary">النقط:</span> تعمل على رفع معدل الحرق 3 أضعاف الحرق الطبيعي</p>
+                    <p class="mb-2">🌿 <span class="text-secondary">الأعشاب:</span> تعمل على إخراج الدهون والسموم والأملاح الزيادة من الجسم</p>
+                    <p class="text-[11px] bg-white/20 inline-block px-3 py-1 rounded-full text-white italic mt-1">💎 الكبسولات + الأعشاب + النقط = الكورس المكثف الكامل</p>
+                </div>
             </div>
             <div class="flex flex-col items-center gap-2">
                 <div class="text-2xl font-black">+<span id="cross-sell-price">150</span> ج.م <span class="text-sm line-through opacity-50">300 ج.م</span></div>
@@ -890,7 +920,7 @@
                                 <span id="summary-base-price" class="font-bold text-dark">990 ج.م</span>
                             </div>
                             <div class="flex justify-between items-center text-gray-600 hidden" id="summary-extra">
-                                <span>إضافات (ديتوكس):</span>
+                                <span>إضافات (أعشاب او نقط Brand Cap):</span>
                                 <span class="font-bold text-accent">+150 ج.م</span>
                             </div>
                             <div class="flex justify-between items-center text-accent font-bold">
@@ -1018,7 +1048,7 @@
                             <label class="text-sm font-black text-dark pr-2">تأكيد الكمية المختارة</label>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <select id="quantity" onchange="manualUpdateBundle(this.value)" class="w-full px-8 py-5 bg-slate-50 rounded-2xl border-2 border-slate-100 font-bold text-dark outline-none appearance-none cursor-pointer hover:border-primary transition-colors">
-                                    <option value="1">علبة واحدة (550 ج.م)</option>
+                                    <option value="1">علبة واحدة (600 ج.م)</option>
                                     <option value="2" selected>علبتين (990 ج.م) - الأفضل</option>
                                     <option value="3">3 علب (1350 ج.م) - شراء 2 + 1 مجاناً</option>
                                 </select>
@@ -1364,7 +1394,7 @@
         function manualUpdateBundle(val) {
             selectedQty = parseInt(val);
             const prices = { 
-                1: config['p1-price'] || 550, 
+                1: config['p1-price'] || 600, 
                 2: config['p2-price'] || 990, 
                 3: config['p3-price'] || 1350 
             };
@@ -1494,7 +1524,7 @@
                 3: config['p3-label'] || "3 علب" 
             };
             const bundle = bundleNames[selectedQty];
-            const extra = crossSellActive ? `نعم (${config['cross-name'] || 'شاي ديتوكس'})` : "لا";
+            const extra = crossSellActive ? `نعم (${config['cross-name'] || 'أعشاب او نقط Brand Cap'})` : "لا";
             const finalPrice = currentPrice + (crossSellActive ? (parseInt(config['cross-price']) || 150) : 0);
 
             // Log Conversion for Dashboard
@@ -1535,7 +1565,7 @@
                             `🏠 *العنوان:* ${address}\n` +
                             `--------------------------\n` +
                             `📦 *الطلب:* ${bundle}\n` +
-                            `🌿 *إضافة ديتوكس:* ${extra}\n` +
+                            `🌿 *إضافة أعشاب او نقط Brand Cap:* ${extra}\n` +
                             `💰 *الإجمالي النهائي:* ${finalPrice} ج.م\n` +
                             `🚚 *موعد التوصيل المتوقع:* ${deliveryDate}\n` +
                             `--------------------------\n` +
