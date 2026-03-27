@@ -21,7 +21,15 @@ export default async function handler(req, res) {
             
             // Push event
             await kv.lpush('leanoza_analytics', ev);
-            // Cap to 3000 events to save storage
+
+            // SPECIAL CASE: If this is an order or lost order, store in a dedicated registry that isn't trimmed
+            if (ev.event === 'whatsapp_conversion' || ev.event === 'abandoned_checkout') {
+                await kv.lpush('leanoza_orders_archive', ev);
+                // Still keep archive to a reasonable limit, say 50000 orders
+                await kv.ltrim('leanoza_orders_archive', 0, 50000);
+            }
+
+            // Cap analytics log to 3000 events to save storage
             await kv.ltrim('leanoza_analytics', 0, 3000);
             return res.status(200).json({ success: true });
             

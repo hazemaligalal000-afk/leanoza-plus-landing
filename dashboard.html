@@ -415,7 +415,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">اسم منتج الـ Cross-sell</label>
-                        <input type="text" id="conf-cross-name" class="input-dark" value="نقط أو أعشاب Brand Cap">
+                        <input type="text" id="conf-cross-name" class="input-dark" value="نقط و أعشاب">
                     </div>
                     <div>
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">سعر الإضافة (ج.م)</label>
@@ -579,13 +579,25 @@
         async function loadSettings() {
             let config = JSON.parse(localStorage.getItem('lean_config') || '{}');
             try {
-                const res = await fetch('/api/config');
-                const serverConfig = await res.json();
+                const [resConfig, resOrders] = await Promise.all([
+                    fetch('/api/config'),
+                    fetch('/api/orders')
+                ]);
+                const serverConfig = await resConfig.json();
+                const serverOrders = await resOrders.json();
+                
                 if(serverConfig && Object.keys(serverConfig).length > 0) {
                     config = serverConfig;
                     localStorage.setItem('lean_config', JSON.stringify(config));
                 }
-            } catch(e) {}
+                
+                if(serverOrders && serverOrders.statuses) {
+                    localStorage.setItem('order_statuses', JSON.stringify(serverOrders.statuses));
+                    localStorage.setItem('viewed_orders', JSON.stringify(serverOrders.viewed || []));
+                }
+            } catch(e) {
+                console.error('Cloud load failed, using local only.', e);
+            }
             
             // Mapping inputs to config
             const mappings = {
@@ -990,10 +1002,19 @@
             modal.classList.add('flex');
         }
 
-        function applyOrderStatus(ts, statusKey) {
+        async function applyOrderStatus(ts, statusKey) {
             const statuses = JSON.parse(localStorage.getItem('order_statuses') || '{}');
             statuses[ts] = statusKey;
             localStorage.setItem('order_statuses', JSON.stringify(statuses));
+
+            // Push to Cloud
+            try {
+                fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'status_update', data: { ts, status: statusKey } })
+                });
+            } catch(e) {}
 
             document.getElementById('status-modal').classList.add('hidden');
             document.getElementById('status-modal').classList.remove('flex');
@@ -1010,11 +1031,20 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        function markAsViewed(id) {
+        async function markAsViewed(id) {
             const viewedIds = JSON.parse(localStorage.getItem('viewed_orders') || '[]');
             if(!viewedIds.includes(id)) {
                 viewedIds.push(id);
                 localStorage.setItem('viewed_orders', JSON.stringify(viewedIds));
+                
+                // Push to Cloud
+                try {
+                    fetch('/api/orders', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: 'mark_viewed', data: { ts: id } })
+                    });
+                } catch(e) {}
             }
         }
 
